@@ -6,15 +6,9 @@
 <title>Neuro Rehab Scoring Calculator - Cloud Sync</title>
 <style>
 :root {
-  --teal: #0d7377;
-  --teal-light: #e0f5f5;
-  --teal-mid: #14a3a8;
-  --slate: #1e293b;
-  --slate-mid: #475569;
-  --slate-light: #94a3b8;
-  --border: #dde3eb;
-  --bg: #f0f4f8;
-  --surface: #ffffff;
+  --teal: #0d7377; --teal-light: #e0f5f5; --teal-mid: #14a3a8;
+  --slate: #1e293b; --slate-mid: #475569; --slate-light: #94a3b8;
+  --border: #dde3eb; --bg: #f0f4f8; --surface: #ffffff;
   --green: #16a34a; --green-bg: #f0fdf4;
   --amber: #b45309; --amber-bg: #fffbeb;
   --red: #dc2626; --red-bg: #fef2f2;
@@ -23,43 +17,34 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; font-size: 14px; line-height: 1.5; color: var(--slate); background: var(--bg); }
 .app { max-width: 1140px; margin: 0 auto; padding: 1.25rem 1rem; }
-
 header { margin-bottom: 1.25rem; display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
 header h1 { font-size: 18px; font-weight: 700; color: var(--teal); letter-spacing: -0.02em; }
 header p { font-size: 12px; color: var(--slate-light); }
-
 .layout { display: grid; grid-template-columns: 1fr 320px; gap: 1.25rem; align-items: start; }
 @media (max-width: 820px) { .layout { grid-template-columns: 1fr; } }
-
 .form-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--rl); overflow: hidden; }
-
 .tab-bar { display: flex; flex-wrap: wrap; gap: 3px; padding: 10px 12px 0; background: var(--bg); border-bottom: 1px solid var(--border); }
 .tab { padding: 5px 10px; border: 1px solid transparent; border-bottom: none; border-radius: 6px 6px 0 0; background: transparent; color: var(--slate-light); cursor: pointer; font-size: 11px; font-family: inherit; white-space: nowrap; }
 .tab:hover { background: var(--surface); color: var(--slate-mid); }
 .tab.on { background: var(--surface); color: var(--teal); border-color: var(--border); border-bottom-color: var(--surface); font-weight: 600; margin-bottom: -1px; }
-
 .sec { display: none; padding: 1.25rem; }
 .sec.on { display: block; }
 .sec-h { font-size: 14px; font-weight: 600; color: var(--slate); margin-bottom: 0.75rem; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
 .sub { font-size: 10px; font-weight: 700; color: var(--slate-light); text-transform: uppercase; letter-spacing: 0.07em; margin: 14px 0 8px; }
 .hint { font-size: 11px; color: var(--slate-light); margin-bottom: 12px; line-height: 1.4; }
-
 .fg2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
 .fg3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px; }
 .f { display: flex; flex-direction: column; gap: 3px; }
 .f label { font-size: 11px; color: var(--slate-mid); font-weight: 500; }
 select, input { width: 100%; padding: 5px 7px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--slate); font-size: 12px; font-family: inherit; cursor: pointer; outline: none; }
 select:focus, input:focus { border-color: var(--teal); }
-
 .tog { display: inline-flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 1rem; }
 .tb { padding: 5px 14px; border: none; background: transparent; color: var(--slate-mid); cursor: pointer; font-size: 12px; font-family: inherit; }
 .tb.on { background: var(--teal); color: #fff; font-weight: 600; }
-
 .nav-row { display: flex; justify-content: space-between; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border); }
 .nbtn { padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; color: var(--slate); cursor: pointer; font-size: 12px; font-family: inherit; }
 .nbtn:hover { background: var(--bg); }
 .nbtn.p { background: var(--teal); color: #fff; border-color: var(--teal); }
-
 .results-panel { position: sticky; top: 1rem; display: flex; flex-direction: column; gap: 10px; }
 .score-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .big-s { background: var(--surface); border: 1px solid var(--border); border-radius: var(--rl); padding: 1rem; }
@@ -69,7 +54,6 @@ select:focus, input:focus { border-color: var(--teal); }
 .h-bg { background: var(--green-bg); color: var(--green); }
 .m-bg { background: var(--amber-bg); color: var(--amber); }
 .l-bg { background: var(--red-bg); color: var(--red); }
-
 .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--rl); padding: 1rem; }
 .card-h { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--slate-light); margin-bottom: 10px; }
 .domain-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--border); }
@@ -93,13 +77,11 @@ select:focus, input:focus { border-color: var(--teal); }
   <h1>Neuro Rehab Scoring Calculator</h1>
   <p>GRS · RPI · Triage Classification · Domain Profile (Cloud Connected)</p>
 </header>
-
 <div class="layout">
 <div class="form-panel">
   <div class="tab-bar" id="tabBar"></div>
   <div id="sections"></div>
 </div>
-
 <div class="results-panel">
   <div class="score-duo">
     <div class="big-s">
@@ -113,23 +95,19 @@ select:focus, input:focus { border-color: var(--teal); }
       <div class="bb" id="rpiBadge">—</div>
     </div>
   </div>
-
   <div class="card">
     <div class="card-h">Domain Profile (radar)</div>
     <canvas id="radar" width="290" height="270"></canvas>
   </div>
-
   <div class="card">
     <div class="card-h">Domain Breakdown</div>
     <div id="domainList"></div>
   </div>
-
   <div class="card" id="triageCard">
     <div class="card-h">Admission Triage</div>
     <div class="triage-val" id="triageV">—</div>
     <div class="triage-desc" id="triageD">Complete all sections to generate triage.</div>
   </div>
-
   <div class="card" id="flagsCard" style="display:none">
     <div class="card-h">Clinical Decision Flags</div>
     <div id="flagsList"></div>
@@ -141,7 +119,7 @@ select:focus, input:focus { border-color: var(--teal); }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script>
 // ==========================================
-// 1. BACKEND URL (PASTE YOUR APP SCRIPT LINK HERE)
+// 1. BACKEND URL
 // ==========================================
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzjfL81BkLhNLETvBJOg5ryLitfMcIv04Yc9wVVwhHXxkAyGz_XuNuwREodYpBwLJcR/exec";
 
@@ -149,28 +127,13 @@ const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzjfL81BkLhNLETvBJO
 // 2. TABS AND SECTIONS DEFINITION
 // ==========================================
 const TABS = ['Demographics', 'Cognition','Tone','Strength','Trunk','Motor Tasks','Sensory','Mobility','Endurance','Motor FIM'];
-
-let cogMode = 'gcs';
-let radarChart = null;
-
-function masOpts(def=0) {
-  const opts = [[0,'0 — No increase'],[1,'1 — Slight (catch)'],[2,'1+ — Slight (catch + resistance)'],[3,'2 — Marked increase'],[4,'3 — Considerable increase'],[5,'4 — Rigid']];
-  return opts.map(([v,t]) => `<option value="${v}"${v===def?' selected':''}>${t}</option>`).join('');
-}
-function mrcOpts(def=3) {
-  const opts = [[5,'5 — Normal power'],[4,'4 — Against resistance'],[3,'3 — Against gravity'],[2,'2 — Without gravity'],[1,'1 — Flicker/trace'],[0,'0 — No contraction']];
-  return opts.map(([v,t]) => `<option value="${v}"${v===def?' selected':''}>${t}</option>`).join('');
-}
-function fimOpts(def=4) {
-  const opts = [[7,'7 — Complete independence'],[6,'6 — Modified independence'],[5,'5 — Supervision/setup'],[4,'4 — Minimal assist (≥75%)'],[3,'3 — Moderate assist (50–74%)'],[2,'2 — Maximal assist (25–49%)'],[1,'1 — Total assist (<25%)']];
-  return opts.map(([v,t]) => `<option value="${v}"${v===def?' selected':''}>${t}</option>`).join('');
-}
-function selOpts(pairs, def) {
-  return pairs.map(([v,t]) => `<option value="${v}"${v===def?' selected':''}>${t}</option>`).join('');
-}
+let cogMode = 'gcs'; let radarChart = null;
+function masOpts(def=0) { const opts = [[0,'0 — No increase'],[1,'1 — Slight (catch)'],[2,'1+ — Slight (catch + resistance)'],[3,'2 — Marked increase'],[4,'3 — Considerable increase'],[5,'4 — Rigid']]; return opts.map(([v,t]) => `<option value="${v}"${v===def?' selected':''}>${t}</option>`).join(''); }
+function mrcOpts(def=3) { const opts = [[5,'5 — Normal power'],[4,'4 — Against resistance'],[3,'3 — Against gravity'],[2,'2 — Without gravity'],[1,'1 — Flicker/trace'],[0,'0 — No contraction']]; return opts.map(([v,t]) => `<option value="${v}"${v===def?' selected':''}>${t}</option>`).join(''); }
+function fimOpts(def=4) { const opts = [[7,'7 — Complete independence'],[6,'6 — Modified independence'],[5,'5 — Supervision/setup'],[4,'4 — Minimal assist (≥75%)'],[3,'3 — Moderate assist (50–74%)'],[2,'2 — Maximal assist (25–49%)'],[1,'1 — Total assist (<25%)']]; return opts.map(([v,t]) => `<option value="${v}"${v===def?' selected':''}>${t}</option>`).join(''); }
+function selOpts(pairs, def) { return pairs.map(([v,t]) => `<option value="${v}"${v===def?' selected':''}>${t}</option>`).join(''); }
 
 const SECTION_HTML = [
-// INDEX 0: DEMOGRAPHICS & CLOUD SYNC
 `<div class="sec-h">Patient Demographics</div>
 <div class="fg2">
   <div class="f"><label>Patient ID (Required)</label><input type="text" id="pId" placeholder="e.g. PT-1001" style="padding:8px;"></div>
@@ -180,301 +143,65 @@ const SECTION_HTML = [
   <label>Patient Name</label><input type="text" id="pName" placeholder="Full Name" style="padding:8px;">
 </div>
 <div class="sec-h">Cloud Database Sync</div>
-<p class="hint">Ensure Patient ID and Assessment Date are filled in. Saving will overwrite data for that specific Date/ID combination.</p>
+<p class="hint">Ensure Patient ID and Assessment Date are filled in.</p>
 <div class="nav-row" style="border:none; padding-top:0; margin-top:0;">
   <button class="nbtn p" style="background:#16a34a; border-color:#16a34a;" onclick="saveData(this)">Save to Cloud</button>
   <button class="nbtn" onclick="loadData(this)">Retrieve Data</button>
 </div>`,
-
-// INDEX 1: COGNITION
-`<div class="sec-h">Cognition</div>
-<div class="tog">
-  <button class="tb on" id="gcsBtn" onclick="setCogMode('gcs')">GCS — Low Level</button>
-  <button class="tb" id="mmseBtn" onclick="setCogMode('mmse')">MMSE — Higher Level</button>
-</div>
-<div id="gcsDiv">
-  <div class="fg3">
-    <div class="f"><label>Eye Opening (E) 1–4</label>
-      <select id="gcsE" onchange="calc()">${selOpts([[4,'4 — Spontaneous'],[3,'3 — To speech'],[2,'2 — To pain'],[1,'1 — No response']],4)}</select>
-    </div>
-    <div class="f"><label>Verbal Response (V) 1–5</label>
-      <select id="gcsV" onchange="calc()">${selOpts([[5,'5 — Oriented'],[4,'4 — Confused'],[3,'3 — Inappropriate words'],[2,'2 — Incomprehensible sounds'],[1,'1 — No response']],4)}</select>
-    </div>
-    <div class="f"><label>Motor Response (M) 1–6</label>
-      <select id="gcsM" onchange="calc()">${selOpts([[6,'6 — Obeys commands'],[5,'5 — Localizes'],[4,'4 — Withdraws'],[3,'3 — Abnormal flexion'],[2,'2 — Extension'],[1,'1 — No response']],5)}</select>
-    </div>
-  </div>
-</div>
-<div id="mmseDiv" style="display:none">
-  <div class="fg2">
-    <div class="f"><label>A. Orientation — Time (0–5)</label><select id="mmseA" onchange="calc()">${selOpts([[5,5],[4,4],[3,3],[2,2],[1,1],[0,0]],5)}</select></div>
-    <div class="f"><label>B. Orientation — Place (0–5)</label><select id="mmseB" onchange="calc()">${selOpts([[5,5],[4,4],[3,3],[2,2],[1,1],[0,0]],5)}</select></div>
-  </div>
-  <div class="fg2">
-    <div class="f"><label>C. Registration (0–3)</label><select id="mmseC" onchange="calc()">${selOpts([[3,3],[2,2],[1,1],[0,0]],3)}</select></div>
-    <div class="f"><label>D. Attention & Calculation (0–5)</label><select id="mmseD" onchange="calc()">${selOpts([[5,5],[4,4],[3,3],[2,2],[1,1],[0,0]],4)}</select></div>
-  </div>
-  <div class="fg2">
-    <div class="f"><label>E. Delayed Recall (0–3)</label><select id="mmseE" onchange="calc()">${selOpts([[3,3],[2,2],[1,1],[0,0]],2)}</select></div>
-    <div class="f"><label>F. Language (0–8)</label><select id="mmseF" onchange="calc()">${selOpts([[8,8],[7,7],[6,6],[5,5],[4,4],[3,3],[2,2],[1,1],[0,0]],7)}</select></div>
-  </div>
-  <div class="fg2">
-    <div class="f"><label>G. Visuospatial Copying (0–1)</label><select id="mmseG" onchange="calc()">${selOpts([[1,'1 — Correct'],[0,'0 — Incorrect']],1)}</select></div>
-  </div>
-</div>
-<div class="sub">Cognition Overlay — mandatory for all patients</div>
-<div class="fg2">
-  <div class="f"><label>Command Following (0–2)</label><select id="cmdFol" onchange="calc()">${selOpts([[2,'2 — Follows 3/3'],[1,'1 — Follows 1/3 or 2/3'],[0,'0 — Follows 0/3']],1)}</select></div>
-  <div class="f"><label>Attention / Digit Span (0–2)</label><select id="digitSpan" onchange="calc()">${selOpts([[2,'2 — Passes 4-digit span'],[1,'1 — Passes 3-digit span only'],[0,'0 — Fails 3-digit span']],1)}</select></div>
-</div>`,
-
-// INDEX 2: TONE
-`<div class="sec-h">Tone / Spasticity — Modified Ashworth Scale</div>
-<p class="hint">Passively move joint at moderate speed. Score worst resistance felt. 0=none · 1=slight catch · 1+=catch+resistance · 2=marked · 3=considerable · 4=rigid</p>
-<div class="sub">Upper Limb — 5 sites (max 25)</div>
-<div class="fg2">
-  <div class="f"><label>Shoulder adductors / internal rotators</label><select id="masShAdd" onchange="calc()">${masOpts()}</select></div>
-  <div class="f"><label>Elbow flexors</label><select id="masElFx" onchange="calc()">${masOpts()}</select></div>
-</div>
-<div class="fg2">
-  <div class="f"><label>Forearm pronators</label><select id="masFAPr" onchange="calc()">${masOpts()}</select></div>
-  <div class="f"><label>Wrist flexors</label><select id="masWrFx" onchange="calc()">${masOpts()}</select></div>
-</div>
-<div class="fg2">
-  <div class="f"><label>Finger flexors</label><select id="masFinFx" onchange="calc()">${masOpts()}</select></div>
-</div>
-<div class="sub">Lower Limb — 4 sites (max 20)</div>
-<div class="fg2">
-  <div class="f"><label>Hip adductors</label><select id="masHipAd" onchange="calc()">${masOpts()}</select></div>
-  <div class="f"><label>Knee flex/ext dominant pattern</label><select id="masKnee" onchange="calc()">${masOpts()}</select></div>
-</div>
-<div class="fg2">
-  <div class="f"><label>Ankle plantarflexors</label><select id="masAnkPF" onchange="calc()">${masOpts()}</select></div>
-  <div class="f"><label>Toe flexors</label><select id="masToeFx" onchange="calc()">${masOpts()}</select></div>
-</div>`,
-
-// INDEX 3: STRENGTH
-`<div class="sec-h">Strength — MRC Scale</div>
-<p class="hint">0=no contraction · 1=flicker · 2=movement without gravity · 3=against gravity · 4=against resistance · 5=normal</p>
-<div class="sub">Upper Limb — 5 muscles (max 25)</div>
-<div class="fg2">
-  <div class="f"><label>Shoulder abduction</label><select id="mrcShAb" onchange="calc()">${mrcOpts()}</select></div>
-  <div class="f"><label>Elbow flexion</label><select id="mrcElFx" onchange="calc()">${mrcOpts()}</select></div>
-</div>
-<div class="fg2">
-  <div class="f"><label>Wrist extension</label><select id="mrcWrEx" onchange="calc()">${mrcOpts()}</select></div>
-  <div class="f"><label>Finger flexion</label><select id="mrcFinFx" onchange="calc()">${mrcOpts()}</select></div>
-</div>
-<div class="fg2">
-  <div class="f"><label>Finger abduction</label><select id="mrcFinAb" onchange="calc()">${mrcOpts()}</select></div>
-</div>
-<div class="sub">Lower Limb — 5 muscles (max 25)</div>
-<div class="fg2">
-  <div class="f"><label>Hip flexion</label><select id="mrcHipFx" onchange="calc()">${mrcOpts()}</select></div>
-  <div class="f"><label>Knee extension</label><select id="mrcKnEx" onchange="calc()">${mrcOpts()}</select></div>
-</div>
-<div class="fg2">
-  <div class="f"><label>Ankle dorsiflexion</label><select id="mrcAnkDF" onchange="calc()">${mrcOpts()}</select></div>
-  <div class="f"><label>Great toe extension</label><select id="mrcGrToe" onchange="calc()">${mrcOpts()}</select></div>
-</div>
-<div class="fg2">
-  <div class="f"><label>Plantarflexion</label><select id="mrcPF" onchange="calc()">${mrcOpts()}</select></div>
-</div>`,
-
-// INDEX 4: TRUNK
-`<div class="sec-h">Trunk Stability / Core Control</div>
-<p class="hint">Patient sitting unsupported, feet supported. Static: 30 sec upright. Dynamic: reach forward 10–15 cm and return. Score best of 2 trials.</p>
-<div class="fg2">
-  <div class="f"><label>Trunk Stability Score (0–2)</label><select id="trunk" onchange="calc()">${selOpts([[2,'2 — Stable trunk + controlled reach without sway'],[1,'1 — Sits 30 sec but uses hands / poor dynamic control'],[0,'0 — Cannot sit unsupported ≥10 sec']],1)}</select></div>
-</div>`,
-
-// INDEX 5: MOTOR TASKS
-`<div class="sec-h">Motor Task Function (0–2 each)</div>
-<p class="hint">2 attempts per task, score best. Allow 1 verbal cue only. Physical assistance = cannot score 2. Use affected side primarily for UL tasks.</p>
-<div class="fg2">
-  <div class="f"><label>1. Reach</label><select id="tskReach" onchange="calc()">${selOpts([[2,'2 — Reaches ≥2/3 directions, no trunk comp.'],[1,'1 — Partial reach or only 1 direction'],[0,'0 — Cannot lift arm toward target']],1)}</select></div>
-  <div class="f"><label>2. Grasp</label><select id="tskGrasp" onchange="calc()">${selOpts([[2,'2 — Holds independently for 10 sec'],[1,'1 — Partial or unstable grasp'],[0,'0 — Cannot grasp']],1)}</select></div>
-</div>
-<div class="fg2">
-  <div class="f"><label>3. Release</label><select id="tskRelease" onchange="calc()">${selOpts([[2,'2 — Releases smoothly within 5 sec'],[1,'1 — Partial / slow release'],[0,'0 — Cannot release']],1)}</select></div>
-  <div class="f"><label>4. Sitting Balance</label><select id="tskSitBal" onchange="calc()">${selOpts([[2,'2 — Stable + dynamic reach without loss'],[1,'1 — Sits 30 sec, loses balance with reach'],[0,'0 — Cannot sit unsupported 10 sec']],1)}</select></div>
-</div>
-<div class="fg2">
-  <div class="f"><label>5. Sit-to-Stand</label><select id="tskSTS" onchange="calc()">${selOpts([[2,'2 — Rises independently, no physical assist'],[1,'1 — Rises using hands / minimal assist'],[0,'0 — Cannot rise even with help']],1)}</select></div>
-  <div class="f"><label>6. Standing Balance</label><select id="tskStBal" onchange="calc()">${selOpts([[2,'2 — Independent + dynamic weight shift'],[1,'1 — Stands with support, unstable dynamically'],[0,'0 — Cannot stand']],1)}</select></div>
-</div>
-<div class="fg2">
-  <div class="f"><label>7. Walking (10 m min 6 m; aid allowed)</label><select id="tskWalk" onchange="calc()">${selOpts([[2,'2 — Independent walking (device allowed)'],[1,'1 — Walks with physical assist / unsafe'],[0,'0 — Cannot walk']],1)}</select></div>
-</div>`,
-
-// INDEX 6: SENSORY
-`<div class="sec-h">Sensory–Perceptual (0–2 each)</div>
-<p class="hint">Eyes closed. Compare affected vs unaffected side. 0=absent · 1=impaired · 2=normal</p>
-<div class="fg2">
-  <div class="f"><label>Light Touch</label><select id="spLT" onchange="calc()">${selOpts([[2,'2 — Intact (>70% correct)'],[1,'1 — Reduced / inconsistent (30–70%)'],[0,'0 — Absent (<30% correct)']],1)}</select></div>
-  <div class="f"><label>Proprioception</label><select id="spProp" onchange="calc()">${selOpts([[2,'2 — Intact (4–5/5 correct)'],[1,'1 — Partial (3/5 correct)'],[0,'0 — Absent (≥3/5 wrong)']],1)}</select></div>
-</div>
-<div class="fg2">
-  <div class="f"><label>Pain / Temperature</label><select id="spPT" onchange="calc()">${selOpts([[2,'2 — Intact'],[1,'1 — Reduced / inconsistent'],[0,'0 — Absent']],1)}</select></div>
-  <div class="f"><label>Vision / Visual Field</label><select id="spVis" onchange="calc()">${selOpts([[2,'2 — Normal'],[1,'1 — Partial deficit'],[0,'0 — Severe field loss / neglect']],1)}</select></div>
-</div>
-<div class="fg2">
-  <div class="f"><label>Neglect / Spatial Awareness</label><select id="spNegl" onchange="calc()">${selOpts([[2,'2 — Absent (no neglect)'],[1,'1 — Mild / inconsistent'],[0,'0 — Clear neglect']],1)}</select></div>
-</div>`,
-
-// INDEX 7: MOBILITY
-`<div class="sec-h">Mobility — Functional Ambulation Categories</div>
-<div class="fg2">
-  <div class="f"><label>FAC Score (0–5)</label><select id="fac" onchange="calc()">${selOpts([[5,'5 — Independent everywhere'],[4,'4 — Independent on level ground'],[3,'3 — Supervision only, no physical contact'],[2,'2 — Intermittent physical support'],[1,'1 — Continuous physical support required'],[0,'0 — Non-functional ambulation']],2)}</select></div>
-</div>`,
-
-// INDEX 8: ENDURANCE
-`<div class="sec-h">Endurance / Fatigue</div>
-<div class="fg2">
-  <div class="f"><label>Therapy Tolerance Time</label><select id="cfTol" onchange="calc()">${selOpts([[2,'2 — ≥20 min active participation'],[1,'1 — 10–20 min active participation'],[0,'0 — <10 min active participation']],1)}</select></div>
-  <div class="f"><label>Repeat Task Consistency</label><select id="cfRep" onchange="calc()">${selOpts([[2,'2 — Same performance on repeat task'],[1,'1 — Worse on repeat'],[0,'0 — Cannot repeat task']],1)}</select></div>
-</div>`,
-
-// INDEX 9: MOTOR FIM
-`<div class="sec-h">Motor FIM (1–7 each)</div>
-<p class="hint">Score what patient does today, not potential. 7=complete independence · 1=total assist</p>
-<div class="sub">Self-care (6 items)</div>
-<div class="fg2">
-  <div class="f"><label>Eating</label><select id="fimEat" onchange="calc()">${fimOpts()}</select></div>
-  <div class="f"><label>Grooming</label><select id="fimGrm" onchange="calc()">${fimOpts()}</select></div>
-</div>
-<div class="fg2">
-  <div class="f"><label>Bathing</label><select id="fimBath" onchange="calc()">${fimOpts()}</select></div>
-  <div class="f"><label>Dressing upper body</label><select id="fimDrU" onchange="calc()">${fimOpts()}</select></div>
-</div>
-<div class="fg2">
-  <div class="f"><label>Dressing lower body</label><select id="fimDrL" onchange="calc()">${fimOpts()}</select></div>
-  <div class="f"><label>Toileting</label><select id="fimToi" onchange="calc()">${fimOpts()}</select></div>
-</div>
-<div class="sub">Sphincter Control (2 items)</div>
-<div class="fg2">
-  <div class="f"><label>Bladder management</label><select id="fimBld" onchange="calc()">${fimOpts()}</select></div>
-  <div class="f"><label>Bowel management</label><select id="fimBwl" onchange="calc()">${fimOpts()}</select></div>
-</div>
-<div class="sub">Transfers (3 items)</div>
-<div class="fg2">
-  <div class="f"><label>Transfer bed / chair / wheelchair</label><select id="fimTrBed" onchange="calc()">${fimOpts()}</select></div>
-  <div class="f"><label>Transfer toilet</label><select id="fimTrToi" onchange="calc()">${fimOpts()}</select></div>
-</div>
-<div class="fg2">
-  <div class="f"><label>Transfer tub / shower</label><select id="fimTrTub" onchange="calc()">${fimOpts()}</select></div>
-</div>
-<div class="sub">Locomotion (2 items)</div>
-<div class="fg2">
-  <div class="f"><label>Walk / Wheelchair</label><select id="fimWalk" onchange="calc()">${fimOpts()}</select></div>
-  <div class="f"><label>Stairs</label><select id="fimStair" onchange="calc()">${fimOpts(3)}</select></div>
-</div>`
+`<div class="sec-h">Cognition</div><div class="tog"><button class="tb on" id="gcsBtn" onclick="setCogMode('gcs')">GCS</button><button class="tb" id="mmseBtn" onclick="setCogMode('mmse')">MMSE</button></div><div id="gcsDiv"><div class="fg3"><div class="f"><label>Eye (E) 1–4</label><select id="gcsE" onchange="calc()">${selOpts([[4,'4'],[3,'3'],[2,'2'],[1,'1']],4)}</select></div><div class="f"><label>Verbal (V) 1–5</label><select id="gcsV" onchange="calc()">${selOpts([[5,'5'],[4,'4'],[3,'3'],[2,'2'],[1,'1']],4)}</select></div><div class="f"><label>Motor (M) 1–6</label><select id="gcsM" onchange="calc()">${selOpts([[6,'6'],[5,'5'],[4,'4'],[3,'3'],[2,'2'],[1,'1']],5)}</select></div></div></div><div id="mmseDiv" style="display:none"><div class="fg2"><div class="f"><label>A. Time (0–5)</label><select id="mmseA" onchange="calc()">${selOpts([[5,5],[4,4],[3,3],[2,2],[1,1],[0,0]],5)}</select></div><div class="f"><label>B. Place (0–5)</label><select id="mmseB" onchange="calc()">${selOpts([[5,5],[4,4],[3,3],[2,2],[1,1],[0,0]],5)}</select></div></div><div class="fg2"><div class="f"><label>C. Reg. (0–3)</label><select id="mmseC" onchange="calc()">${selOpts([[3,3],[2,2],[1,1],[0,0]],3)}</select></div><div class="f"><label>D. Attn (0–5)</label><select id="mmseD" onchange="calc()">${selOpts([[5,5],[4,4],[3,3],[2,2],[1,1],[0,0]],4)}</select></div></div><div class="fg2"><div class="f"><label>E. Recall (0–3)</label><select id="mmseE" onchange="calc()">${selOpts([[3,3],[2,2],[1,1],[0,0]],2)}</select></div><div class="f"><label>F. Lang. (0–8)</label><select id="mmseF" onchange="calc()">${selOpts([[8,8],[7,7],[6,6],[5,5],[4,4],[3,3],[2,2],[1,1],[0,0]],7)}</select></div></div><div class="fg2"><div class="f"><label>G. Visuo (0–1)</label><select id="mmseG" onchange="calc()">${selOpts([[1,'1'],[0,'0']],1)}</select></div></div></div><div class="sub">Cognition Overlay</div><div class="fg2"><div class="f"><label>Commands (0–2)</label><select id="cmdFol" onchange="calc()">${selOpts([[2,'2'],[1,'1'],[0,'0']],1)}</select></div><div class="f"><label>Attention (0–2)</label><select id="digitSpan" onchange="calc()">${selOpts([[2,'2'],[1,'1'],[0,'0']],1)}</select></div></div>`,
+`<div class="sec-h">Tone (MAS)</div><div class="sub">Upper Limb</div><div class="fg2"><div class="f"><label>Shoulder add</label><select id="masShAdd" onchange="calc()">${masOpts()}</select></div><div class="f"><label>Elbow flex</label><select id="masElFx" onchange="calc()">${masOpts()}</select></div></div><div class="fg2"><div class="f"><label>Forearm pro</label><select id="masFAPr" onchange="calc()">${masOpts()}</select></div><div class="f"><label>Wrist flex</label><select id="masWrFx" onchange="calc()">${masOpts()}</select></div></div><div class="fg2"><div class="f"><label>Finger flex</label><select id="masFinFx" onchange="calc()">${masOpts()}</select></div></div><div class="sub">Lower Limb</div><div class="fg2"><div class="f"><label>Hip add</label><select id="masHipAd" onchange="calc()">${masOpts()}</select></div><div class="f"><label>Knee pattern</label><select id="masKnee" onchange="calc()">${masOpts()}</select></div></div><div class="fg2"><div class="f"><label>Ankle PF</label><select id="masAnkPF" onchange="calc()">${masOpts()}</select></div><div class="f"><label>Toe flex</label><select id="masToeFx" onchange="calc()">${masOpts()}</select></div></div>`,
+`<div class="sec-h">Strength (MRC)</div><div class="sub">Upper Limb</div><div class="fg2"><div class="f"><label>Shoulder abd</label><select id="mrcShAb" onchange="calc()">${mrcOpts()}</select></div><div class="f"><label>Elbow flex</label><select id="mrcElFx" onchange="calc()">${mrcOpts()}</select></div></div><div class="fg2"><div class="f"><label>Wrist ext</label><select id="mrcWrEx" onchange="calc()">${mrcOpts()}</select></div><div class="f"><label>Finger flex</label><select id="mrcFinFx" onchange="calc()">${mrcOpts()}</select></div></div><div class="fg2"><div class="f"><label>Finger abd</label><select id="mrcFinAb" onchange="calc()">${mrcOpts()}</select></div></div><div class="sub">Lower Limb</div><div class="fg2"><div class="f"><label>Hip flex</label><select id="mrcHipFx" onchange="calc()">${mrcOpts()}</select></div><div class="f"><label>Knee ext</label><select id="mrcKnEx" onchange="calc()">${mrcOpts()}</select></div></div><div class="fg2"><div class="f"><label>Ankle DF</label><select id="mrcAnkDF" onchange="calc()">${mrcOpts()}</select></div><div class="f"><label>Toe ext</label><select id="mrcGrToe" onchange="calc()">${mrcOpts()}</select></div></div><div class="fg2"><div class="f"><label>Ankle PF</label><select id="mrcPF" onchange="calc()">${mrcOpts()}</select></div></div>`,
+`<div class="sec-h">Trunk Stability</div><div class="fg2"><div class="f"><label>Trunk Score (0–2)</label><select id="trunk" onchange="calc()">${selOpts([[2,'2 — Stable'],[1,'1 — Uses hands'],[0,'0 — Cannot sit']],1)}</select></div></div>`,
+`<div class="sec-h">Motor Tasks (0–2 each)</div><div class="fg2"><div class="f"><label>1. Reach</label><select id="tskReach" onchange="calc()">${selOpts([[2,'2'],[1,'1'],[0,'0']],1)}</select></div><div class="f"><label>2. Grasp</label><select id="tskGrasp" onchange="calc()">${selOpts([[2,'2'],[1,'1'],[0,'0']],1)}</select></div></div><div class="fg2"><div class="f"><label>3. Release</label><select id="tskRelease" onchange="calc()">${selOpts([[2,'2'],[1,'1'],[0,'0']],1)}</select></div><div class="f"><label>4. Sitting Balance</label><select id="tskSitBal" onchange="calc()">${selOpts([[2,'2'],[1,'1'],[0,'0']],1)}</select></div></div><div class="fg2"><div class="f"><label>5. Sit-to-Stand</label><select id="tskSTS" onchange="calc()">${selOpts([[2,'2'],[1,'1'],[0,'0']],1)}</select></div><div class="f"><label>6. Standing Balance</label><select id="tskStBal" onchange="calc()">${selOpts([[2,'2'],[1,'1'],[0,'0']],1)}</select></div></div><div class="fg2"><div class="f"><label>7. Walking</label><select id="tskWalk" onchange="calc()">${selOpts([[2,'2'],[1,'1'],[0,'0']],1)}</select></div></div>`,
+`<div class="sec-h">Sensory (0–2)</div><div class="fg2"><div class="f"><label>Light Touch</label><select id="spLT" onchange="calc()">${selOpts([[2,'2'],[1,'1'],[0,'0']],1)}</select></div><div class="f"><label>Proprioception</label><select id="spProp" onchange="calc()">${selOpts([[2,'2'],[1,'1'],[0,'0']],1)}</select></div></div><div class="fg2"><div class="f"><label>Pain/Temp</label><select id="spPT" onchange="calc()">${selOpts([[2,'2'],[1,'1'],[0,'0']],1)}</select></div><div class="f"><label>Vision</label><select id="spVis" onchange="calc()">${selOpts([[2,'2'],[1,'1'],[0,'0']],1)}</select></div></div><div class="fg2"><div class="f"><label>Neglect</label><select id="spNegl" onchange="calc()">${selOpts([[2,'2'],[1,'1'],[0,'0']],1)}</select></div></div>`,
+`<div class="sec-h">Mobility</div><div class="fg2"><div class="f"><label>FAC Score (0–5)</label><select id="fac" onchange="calc()">${selOpts([[5,'5 — Indep. anywhere'],[4,'4 — Indep. level'],[3,'3 — Supervision'],[2,'2 — Intermittent assist'],[1,'1 — Continuous assist'],[0,'0 — Non-functional']],2)}</select></div></div>`,
+`<div class="sec-h">Endurance</div><div class="fg2"><div class="f"><label>Therapy Tolerance</label><select id="cfTol" onchange="calc()">${selOpts([[2,'2 — ≥20 min'],[1,'1 — 10–20 min'],[0,'0 — <10 min']],1)}</select></div><div class="f"><label>Repeat Task</label><select id="cfRep" onchange="calc()">${selOpts([[2,'2 — Same'],[1,'1 — Worse'],[0,'0 — Cannot']],1)}</select></div></div>`,
+`<div class="sec-h">Motor FIM (1–7)</div><div class="sub">Self-care</div><div class="fg2"><div class="f"><label>Eating</label><select id="fimEat" onchange="calc()">${fimOpts()}</select></div><div class="f"><label>Grooming</label><select id="fimGrm" onchange="calc()">${fimOpts()}</select></div></div><div class="fg2"><div class="f"><label>Bathing</label><select id="fimBath" onchange="calc()">${fimOpts()}</select></div><div class="f"><label>Dressing UP</label><select id="fimDrU" onchange="calc()">${fimOpts()}</select></div></div><div class="fg2"><div class="f"><label>Dressing LO</label><select id="fimDrL" onchange="calc()">${fimOpts()}</select></div><div class="f"><label>Toileting</label><select id="fimToi" onchange="calc()">${fimOpts()}</select></div></div><div class="sub">Sphincter</div><div class="fg2"><div class="f"><label>Bladder</label><select id="fimBld" onchange="calc()">${fimOpts()}</select></div><div class="f"><label>Bowel</label><select id="fimBwl" onchange="calc()">${fimOpts()}</select></div></div><div class="sub">Transfers</div><div class="fg2"><div class="f"><label>Bed/Chair</label><select id="fimTrBed" onchange="calc()">${fimOpts()}</select></div><div class="f"><label>Toilet</label><select id="fimTrToi" onchange="calc()">${fimOpts()}</select></div></div><div class="fg2"><div class="f"><label>Tub/Shower</label><select id="fimTrTub" onchange="calc()">${fimOpts()}</select></div></div><div class="sub">Locomotion</div><div class="fg2"><div class="f"><label>Walk/Wheelchair</label><select id="fimWalk" onchange="calc()">${fimOpts()}</select></div><div class="f"><label>Stairs</label><select id="fimStair" onchange="calc()">${fimOpts(3)}</select></div></div>`
 ];
 
 // ==========================================
-// 3. CORE LOGIC AND RENDERING
+// 3. CORE LOGIC
 // ==========================================
-
 function buildTabs() {
-  const bar = document.getElementById('tabBar');
-  const secWrap = document.getElementById('sections');
+  const bar = document.getElementById('tabBar'), secWrap = document.getElementById('sections');
   TABS.forEach((t, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'tab' + (i===0?' on':'');
-    btn.textContent = t;
-    btn.onclick = () => goTab(i);
-    bar.appendChild(btn);
-
-    const sec = document.createElement('div');
-    sec.className = 'sec' + (i===0?' on':'');
-    sec.id = 'sec'+i;
-
+    const btn = document.createElement('button'); btn.className = 'tab' + (i===0?' on':''); btn.textContent = t; btn.onclick = () => goTab(i); bar.appendChild(btn);
+    const sec = document.createElement('div'); sec.className = 'sec' + (i===0?' on':''); sec.id = 'sec'+i;
     const navPrev = i > 0 ? `<button class="nbtn" onclick="goTab(${i-1})">← ${TABS[i-1]}</button>` : `<div></div>`;
     const navNext = i < TABS.length-1 ? `<button class="nbtn p" onclick="goTab(${i+1})">Next: ${TABS[i+1]} →</button>` : `<div></div>`;
-
-    sec.innerHTML = SECTION_HTML[i] + (i===0 ? `` : `<div class="nav-row">${navPrev}${navNext}</div>`);
-    secWrap.appendChild(sec);
+    sec.innerHTML = SECTION_HTML[i] + (i===0 ? `` : `<div class="nav-row">${navPrev}${navNext}</div>`); secWrap.appendChild(sec);
   });
 }
-
-function goTab(i) {
-  document.querySelectorAll('.tab').forEach((t,j) => t.className = 'tab'+(j===i?' on':''));
-  document.querySelectorAll('.sec').forEach((s,j) => s.className = 'sec'+(j===i?' on':''));
-}
-
-function setCogMode(m) {
-  cogMode = m;
-  document.getElementById('gcsBtn').className = 'tb'+(m==='gcs'?' on':'');
-  document.getElementById('mmseBtn').className = 'tb'+(m==='mmse'?' on':'');
-  document.getElementById('gcsDiv').style.display = m==='gcs'?'block':'none';
-  document.getElementById('mmseDiv').style.display = m==='mmse'?'block':'none';
-  calc();
-}
-
+function goTab(i) { document.querySelectorAll('.tab').forEach((t,j) => t.className = 'tab'+(j===i?' on':'')); document.querySelectorAll('.sec').forEach((s,j) => s.className = 'sec'+(j===i?' on':'')); }
+function setCogMode(m) { cogMode = m; document.getElementById('gcsBtn').className = 'tb'+(m==='gcs'?' on':''); document.getElementById('mmseBtn').className = 'tb'+(m==='mmse'?' on':''); document.getElementById('gcsDiv').style.display = m==='gcs'?'block':'none'; document.getElementById('mmseDiv').style.display = m==='mmse'?'block':'none'; calc(); }
 function gv(id) { return parseInt(document.getElementById(id).value)||0; }
 
 function calc() {
-  let C;
-  if (cogMode === 'gcs') {
-    const gcs = gv('gcsE') + gv('gcsV') + gv('gcsM');
-    C = (gcs / 15) * 100;
-  } else {
-    const mmse = gv('mmseA')+gv('mmseB')+gv('mmseC')+gv('mmseD')+gv('mmseE')+gv('mmseF')+gv('mmseG');
-    C = (mmse / 30) * 100;
-  }
-  const overlay = gv('cmdFol') + gv('digitSpan');
-  const overlayPct = (overlay / 4) * 100;
-  const C_final = (0.7 * C) + (0.3 * overlayPct);
-
-  const ulMAS = gv('masShAdd')+gv('masElFx')+gv('masFAPr')+gv('masWrFx')+gv('masFinFx');
-  const llMAS = gv('masHipAd')+gv('masKnee')+gv('masAnkPF')+gv('masToeFx');
-  const TS = ((ulMAS / 25)*100 + (llMAS / 20)*100) / 2;
-
+  let C; if (cogMode === 'gcs') { C = ((gv('gcsE') + gv('gcsV') + gv('gcsM')) / 15) * 100; } else { C = ((gv('mmseA')+gv('mmseB')+gv('mmseC')+gv('mmseD')+gv('mmseE')+gv('mmseF')+gv('mmseG')) / 30) * 100; }
+  const C_final = (0.7 * C) + (0.3 * (((gv('cmdFol') + gv('digitSpan')) / 4) * 100));
+  const TS = (((gv('masShAdd')+gv('masElFx')+gv('masFAPr')+gv('masWrFx')+gv('masFinFx')) / 25)*100 + ((gv('masHipAd')+gv('masKnee')+gv('masAnkPF')+gv('masToeFx')) / 20)*100) / 2;
   const S = (((gv('mrcShAb')+gv('mrcElFx')+gv('mrcWrEx')+gv('mrcFinFx')+gv('mrcFinAb'))/25) + ((gv('mrcHipFx')+gv('mrcKnEx')+gv('mrcAnkDF')+gv('mrcGrToe')+gv('mrcPF'))/25))/2*100;
-  
   const TR_pct = (gv('trunk')/2)*100;
   const T_pct = ((gv('tskReach')+gv('tskGrasp')+gv('tskRelease')+gv('tskSitBal')+gv('tskSTS')+gv('tskStBal')+gv('tskWalk'))/14)*100;
-
   const M_final = (0.40*S) + (0.40*T_pct) + (0.20*TR_pct);
   const ME = M_final * (1 - TS/200);
-
   const SP_pct = ((gv('spLT')+gv('spProp')+gv('spPT')+gv('spVis')+gv('spNegl'))/10)*100;
   const FAC_pct = (gv('fac')/5)*100;
   const CF_pct = ((gv('cfTol')+gv('cfRep'))/4)*100;
-
   const fimSum = gv('fimEat')+gv('fimGrm')+gv('fimBath')+gv('fimDrU')+gv('fimDrL')+gv('fimToi')+gv('fimBld')+gv('fimBwl')+gv('fimTrBed')+gv('fimTrToi')+gv('fimTrTub')+gv('fimWalk')+gv('fimStair');
   const F = Math.max(0, Math.min(100, ((fimSum - 13) / 78) * 100));
-
   const GRS = (0.20*C_final)+(0.30*F)+(0.20*ME)+(0.15*FAC_pct)+(0.10*SP_pct)+(0.05*CF_pct);
   const RPI = (0.30*C_final)+(0.25*CF_pct)+(0.20*SP_pct)+(0.15*FAC_pct)+(0.10*(100-TS));
-
   renderResults({C_final, S, TS, TR_pct, T_pct, M_final, ME, SP_pct, FAC_pct, CF_pct, F, GRS, RPI, fimSum});
 }
 
 function renderResults(d) {
-  const grs = Math.round(d.GRS);
-  const rpi = Math.round(d.RPI);
-
+  const grs = Math.round(d.GRS), rpi = Math.round(d.RPI);
   const grsCat = grs >= 76 ? ['h-bg','High Recovery'] : grs >= 51 ? ['m-bg','Moderate Recovery'] : grs >= 26 ? ['m-bg','Low Recovery'] : ['l-bg','Severe Disability'];
   const rpiCat = d.RPI >= 70 ? ['h-bg','High Potential'] : d.RPI >= 40 ? ['m-bg','Moderate Potential'] : ['l-bg','Low Potential'];
-
-  document.getElementById('grsV').textContent = grs + '%';
-  document.getElementById('grsBadge').className = 'bb ' + grsCat[0];
-  document.getElementById('grsBadge').textContent = grsCat[1];
-  document.getElementById('rpiV').textContent = rpi + '%';
-  document.getElementById('rpiBadge').className = 'bb ' + rpiCat[0];
-  document.getElementById('rpiBadge').textContent = rpiCat[1];
-
-  const domEl = document.getElementById('domainList');
-  domEl.innerHTML = [
-    {lbl:'Cognition', v: Math.round(d.C_final)}, {lbl:'Strength', v: Math.round(d.S)},
-    {lbl:'Tone ctrl.', v: Math.round(100-d.TS)}, {lbl:'Trunk', v: Math.round(d.TR_pct)},
-    {lbl:'Motor Tasks', v: Math.round(d.T_pct)}, {lbl:'Motor Final', v: Math.round(d.M_final)},
-    {lbl:'Mot. Efficiency', v: Math.round(d.ME)}, {lbl:'Sensory', v: Math.round(d.SP_pct)},
-    {lbl:'Mobility (FAC)', v: Math.round(d.FAC_pct)}, {lbl:'Endurance', v: Math.round(d.CF_pct)},
-    {lbl:'FIM Function', v: Math.round(d.F)}
-  ].map(dm => `<div class="domain-row"><div class="dr-lbl">${dm.lbl}</div><div class="dr-bar-wrap"><div class="dr-bar" style="width:${dm.v}%;background:${dm.v >= 70 ? '#16a34a' : dm.v >= 40 ? '#b45309' : '#dc2626'}"></div></div><div class="dr-val">${dm.v}%</div></div>`).join('');
-
+  document.getElementById('grsV').textContent = grs + '%'; document.getElementById('grsBadge').className = 'bb ' + grsCat[0]; document.getElementById('grsBadge').textContent = grsCat[1];
+  document.getElementById('rpiV').textContent = rpi + '%'; document.getElementById('rpiBadge').className = 'bb ' + rpiCat[0]; document.getElementById('rpiBadge').textContent = rpiCat[1];
+  document.getElementById('domainList').innerHTML = [ {lbl:'Cognition', v: Math.round(d.C_final)}, {lbl:'Strength', v: Math.round(d.S)}, {lbl:'Tone ctrl.', v: Math.round(100-d.TS)}, {lbl:'Trunk', v: Math.round(d.TR_pct)}, {lbl:'Motor Tasks', v: Math.round(d.T_pct)}, {lbl:'Motor Final', v: Math.round(d.M_final)}, {lbl:'Mot. Efficiency', v: Math.round(d.ME)}, {lbl:'Sensory', v: Math.round(d.SP_pct)}, {lbl:'Mobility', v: Math.round(d.FAC_pct)}, {lbl:'Endurance', v: Math.round(d.CF_pct)}, {lbl:'FIM Func', v: Math.round(d.F)} ].map(dm => `<div class="domain-row"><div class="dr-lbl">${dm.lbl}</div><div class="dr-bar-wrap"><div class="dr-bar" style="width:${dm.v}%;background:${dm.v >= 70 ? '#16a34a' : dm.v >= 40 ? '#b45309' : '#dc2626'}"></div></div><div class="dr-val">${dm.v}%</div></div>`).join('');
   updateRadar(d); renderTriage(d); renderFlags(d);
 }
 
@@ -486,29 +213,29 @@ function updateRadar(d) {
 
 function renderTriage(d) {
   let cat, desc;
-  if (d.GRS > 75 && d.fimSum > 80 && d.FAC_pct >= 80) { cat = 'Category 4 — OPD Maintenance'; desc = 'Achieved functional independence. Suitable for outpatient maintenance.'; }
-  else if (d.RPI > 70) { cat = 'Category 1 — Intensive Rehab Candidate'; desc = 'High potential. Medically stable, endurance acceptable. Goal: aggressive training.'; }
-  else if (d.RPI >= 40) { cat = 'Category 2 — Structured Rehab'; desc = 'Moderate potential. Requires supervised plan and caregiver training.'; }
-  else { cat = 'Category 3 — Supportive / Slow Recovery'; desc = 'Low potential. Focus on caregiver training, positioning, and prevention.'; }
+  if (d.GRS > 75 && d.fimSum > 80 && d.FAC_pct >= 80) { cat = 'Category 4 — OPD Maintenance'; desc = 'Achieved functional independence.'; }
+  else if (d.RPI > 70) { cat = 'Category 1 — Intensive Rehab'; desc = 'High potential. Medically stable, endurance acceptable.'; }
+  else if (d.RPI >= 40) { cat = 'Category 2 — Structured Rehab'; desc = 'Moderate potential. Requires supervised plan.'; }
+  else { cat = 'Category 3 — Supportive Care'; desc = 'Low potential. Focus on caregiver training and prevention.'; }
   document.getElementById('triageV').textContent = cat; document.getElementById('triageD').textContent = desc;
 }
 
 function renderFlags(d) {
   const flags = [];
-  if (d.ME < 40 && d.TS > 50) flags.push({s:'alert', msg:'Tone limiting motor output — prioritise spasticity management'});
-  if (d.F < 40 && d.M_final > 50) flags.push({s:'warn', msg:'ADL carryover gap — add task-based ADL + caregiver training'});
-  if (d.SP_pct < 40) flags.push({s:'alert', msg:'Sensory deficit — Sensory re-education mandatory'});
-  if (d.C_final < 50) flags.push({s:'warn', msg:'Cognition <50% — Use repetition + caregiver-driven rehab model'});
-  if (d.CF_pct < 40) flags.push({s:'warn', msg:'Fatigue limiting therapy — implement pacing protocol'});
-  if (d.TR_pct < 50) flags.push({s:'warn', msg:'Trunk unstable — core activation is primary focus'});
-  if (d.TS > 60) flags.push({s:'alert', msg:'Severe tone — physical management of spasticity priority'});
+  if (d.ME < 40 && d.TS > 50) flags.push({s:'alert', msg:'Tone limiting motor output.'});
+  if (d.F < 40 && d.M_final > 50) flags.push({s:'warn', msg:'ADL carryover gap.'});
+  if (d.SP_pct < 40) flags.push({s:'alert', msg:'Sensory deficit (<40%).'});
+  if (d.C_final < 50) flags.push({s:'warn', msg:'Cognition <50%.'});
+  if (d.CF_pct < 40) flags.push({s:'warn', msg:'Fatigue limiting therapy.'});
+  if (d.TR_pct < 50) flags.push({s:'warn', msg:'Trunk unstable.'});
+  if (d.TS > 60) flags.push({s:'alert', msg:'Severe tone (>60%).'});
   const fc = document.getElementById('flagsCard'), fl = document.getElementById('flagsList');
   if (flags.length === 0) { fc.style.display = 'none'; return; }
   fc.style.display = 'block'; fl.innerHTML = flags.map(f => `<div class="flag-item"><div class="fd f${f.s==='alert'?'a':'w'}"></div><div>${f.msg}</div></div>`).join('');
 }
 
 // ==========================================
-// 4. CLOUD SYNC LOGIC (SAVE / RETRIEVE)
+// 4. CLOUD SYNC LOGIC (FIXED FOR BROWSER BLOCKS)
 // ==========================================
 
 async function saveData(btn) {
@@ -517,8 +244,7 @@ async function saveData(btn) {
   if (!patientId || !date) return alert("Patient ID and Date are required to save.");
 
   const oldText = btn.textContent;
-  btn.textContent = "Saving...";
-  btn.disabled = true;
+  btn.textContent = "Saving..."; btn.disabled = true;
 
   const allInputs = {};
   document.querySelectorAll('select, input').forEach(el => { if (el.id) allInputs[el.id] = el.value; });
@@ -530,10 +256,16 @@ async function saveData(btn) {
   };
 
   try {
-    await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
+    // The redirect: 'follow' and text/plain headers prevent the browser from blocking the connection
+    await fetch(WEB_APP_URL, { 
+      method: 'POST', 
+      redirect: 'follow',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload) 
+    });
     alert("Data saved successfully to Cloud!");
   } catch (e) {
-    alert("Save request sent.");
+    alert("There was an error communicating with Google Sheets. Please ensure your script is deployed to 'Anyone' and as a 'New Version'.");
     console.error(e);
   } finally {
     btn.textContent = oldText; btn.disabled = false;
@@ -546,25 +278,21 @@ async function loadData(btn) {
   if (!pId || !pDate) return alert("Enter Patient ID and Date to retrieve records.");
 
   const oldText = btn.textContent;
-  btn.textContent = "Loading...";
-  btn.disabled = true;
+  btn.textContent = "Loading..."; btn.disabled = true;
 
   try {
-    const resp = await fetch(`${WEB_APP_URL}?patientId=${pId}&date=${pDate}`);
+    const resp = await fetch(`${WEB_APP_URL}?patientId=${pId}&date=${pDate}`, { redirect: 'follow' });
     const text = await resp.text();
     if (text === "Not Found" || !text) {
       alert("No record found for this ID and Date.");
     } else {
       const data = JSON.parse(text);
-      Object.keys(data).forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = data[id];
-      });
+      Object.keys(data).forEach(id => { const el = document.getElementById(id); if (el) el.value = data[id]; });
       calc(); // Re-run all calculations to update the UI
       alert("Data retrieved successfully!");
     }
   } catch (e) {
-    alert("Error retrieving data. Did you replace the WEB_APP_URL?");
+    alert("Error retrieving data. Please ensure your script is deployed to 'Anyone'.");
     console.error(e);
   } finally {
     btn.textContent = oldText; btn.disabled = false;
