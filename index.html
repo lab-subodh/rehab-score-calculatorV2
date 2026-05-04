@@ -256,16 +256,17 @@ async function saveData(btn) {
   };
 
   try {
-    // The redirect: 'follow' and text/plain headers prevent the browser from blocking the connection
+    // mode: 'no-cors' forces the browser to push the data without getting blocked by Google's redirect
     await fetch(WEB_APP_URL, { 
       method: 'POST', 
-      redirect: 'follow',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      mode: 'no-cors',
       body: JSON.stringify(payload) 
     });
-    alert("Data saved successfully to Cloud!");
+    
+    // With no-cors, we don't get a readable response back, so we assume success if no error was thrown.
+    alert("Data sent to Google Sheets! Please check your spreadsheet to confirm.");
   } catch (e) {
-    alert("There was an error communicating with Google Sheets. Please ensure your script is deployed to 'Anyone' and as a 'New Version'.");
+    alert("Network error. Could not connect to Google Sheets.");
     console.error(e);
   } finally {
     btn.textContent = oldText; btn.disabled = false;
@@ -281,10 +282,12 @@ async function loadData(btn) {
   btn.textContent = "Loading..."; btn.disabled = true;
 
   try {
-    const resp = await fetch(`${WEB_APP_URL}?patientId=${pId}&date=${pDate}`, { redirect: 'follow' });
+    // GET requests do not need no-cors, Google handles them natively.
+    const resp = await fetch(`${WEB_APP_URL}?patientId=${pId}&date=${pDate}`);
     const text = await resp.text();
-    if (text === "Not Found" || !text) {
-      alert("No record found for this ID and Date.");
+    
+    if (text === "Not Found" || !text || text.includes("<html")) {
+      alert("No record found for this ID and Date, or the Web App URL is incorrect.");
     } else {
       const data = JSON.parse(text);
       Object.keys(data).forEach(id => { const el = document.getElementById(id); if (el) el.value = data[id]; });
@@ -292,13 +295,12 @@ async function loadData(btn) {
       alert("Data retrieved successfully!");
     }
   } catch (e) {
-    alert("Error retrieving data. Please ensure your script is deployed to 'Anyone'.");
+    alert("Error retrieving data. Check browser console for details.");
     console.error(e);
   } finally {
     btn.textContent = oldText; btn.disabled = false;
   }
 }
-
 // INITIALIZATION
 buildTabs();
 calc();
