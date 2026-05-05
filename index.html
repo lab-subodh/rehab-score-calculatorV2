@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Neuro Rehab Scoring Calculator - Cloud Sync</title>
+<title>Neuro Rehab Scoring Calculator - Local Storage</title>
 <style>
 :root {
   --teal: #0d7377; --teal-light: #e0f5f5; --teal-mid: #14a3a8;
@@ -41,7 +41,7 @@ select:focus, input:focus { border-color: var(--teal); }
 .tog { display: inline-flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 1rem; }
 .tb { padding: 5px 14px; border: none; background: transparent; color: var(--slate-mid); cursor: pointer; font-size: 12px; font-family: inherit; }
 .tb.on { background: var(--teal); color: #fff; font-weight: 600; }
-.nav-row { display: flex; justify-content: space-between; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+.nav-row { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border); }
 .nbtn { padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; color: var(--slate); cursor: pointer; font-size: 12px; font-family: inherit; }
 .nbtn:hover { background: var(--bg); }
 .nbtn.p { background: var(--teal); color: #fff; border-color: var(--teal); }
@@ -75,7 +75,7 @@ select:focus, input:focus { border-color: var(--teal); }
 <div class="app">
 <header>
   <h1>Neuro Rehab Scoring Calculator</h1>
-  <p>GRS · RPI · Triage Classification · Domain Profile (Cloud Connected)</p>
+  <p>GRS · RPI · Triage Classification · Domain Profile (Local Device Storage)</p>
 </header>
 <div class="layout">
 <div class="form-panel">
@@ -119,12 +119,7 @@ select:focus, input:focus { border-color: var(--teal); }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script>
 // ==========================================
-// 1. BACKEND URL
-// ==========================================
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzjfL81BkLhNLETvBJOg5ryLitfMcIv04Yc9wVVwhHXxkAyGz_XuNuwREodYpBwLJcR/exec";
-
-// ==========================================
-// 2. TABS AND SECTIONS DEFINITION
+// 1. TABS AND SECTIONS DEFINITION
 // ==========================================
 const TABS = ['Demographics', 'Cognition','Tone','Strength','Trunk','Motor Tasks','Sensory','Mobility','Endurance','Motor FIM'];
 let cogMode = 'gcs'; let radarChart = null;
@@ -142,11 +137,12 @@ const SECTION_HTML = [
 <div class="f" style="margin-top:10px; margin-bottom: 20px;">
   <label>Patient Name</label><input type="text" id="pName" placeholder="Full Name" style="padding:8px;">
 </div>
-<div class="sec-h">Cloud Database Sync</div>
-<p class="hint">Ensure Patient ID and Assessment Date are filled in.</p>
-<div class="nav-row" style="border:none; padding-top:0; margin-top:0;">
-  <button class="nbtn p" style="background:#16a34a; border-color:#16a34a;" onclick="saveData(this)">Save to Cloud</button>
+<div class="sec-h">Device Storage Sync</div>
+<p class="hint">Data is saved securely to this device's browser memory. You can export all saved data to an Excel-friendly CSV file.</p>
+<div class="nav-row" style="border:none; padding-top:0; margin-top:0; justify-content: flex-start;">
+  <button class="nbtn p" style="background:#16a34a; border-color:#16a34a;" onclick="saveData(this)">Save to Device</button>
   <button class="nbtn" onclick="loadData(this)">Retrieve Data</button>
+  <button class="nbtn" style="border-color:#14a3a8; color:#14a3a8;" onclick="exportData(this)">Export All Data (CSV)</button>
 </div>`,
 `<div class="sec-h">Cognition</div><div class="tog"><button class="tb on" id="gcsBtn" onclick="setCogMode('gcs')">GCS</button><button class="tb" id="mmseBtn" onclick="setCogMode('mmse')">MMSE</button></div><div id="gcsDiv"><div class="fg3"><div class="f"><label>Eye (E) 1–4</label><select id="gcsE" onchange="calc()">${selOpts([[4,'4'],[3,'3'],[2,'2'],[1,'1']],4)}</select></div><div class="f"><label>Verbal (V) 1–5</label><select id="gcsV" onchange="calc()">${selOpts([[5,'5'],[4,'4'],[3,'3'],[2,'2'],[1,'1']],4)}</select></div><div class="f"><label>Motor (M) 1–6</label><select id="gcsM" onchange="calc()">${selOpts([[6,'6'],[5,'5'],[4,'4'],[3,'3'],[2,'2'],[1,'1']],5)}</select></div></div></div><div id="mmseDiv" style="display:none"><div class="fg2"><div class="f"><label>A. Time (0–5)</label><select id="mmseA" onchange="calc()">${selOpts([[5,5],[4,4],[3,3],[2,2],[1,1],[0,0]],5)}</select></div><div class="f"><label>B. Place (0–5)</label><select id="mmseB" onchange="calc()">${selOpts([[5,5],[4,4],[3,3],[2,2],[1,1],[0,0]],5)}</select></div></div><div class="fg2"><div class="f"><label>C. Reg. (0–3)</label><select id="mmseC" onchange="calc()">${selOpts([[3,3],[2,2],[1,1],[0,0]],3)}</select></div><div class="f"><label>D. Attn (0–5)</label><select id="mmseD" onchange="calc()">${selOpts([[5,5],[4,4],[3,3],[2,2],[1,1],[0,0]],4)}</select></div></div><div class="fg2"><div class="f"><label>E. Recall (0–3)</label><select id="mmseE" onchange="calc()">${selOpts([[3,3],[2,2],[1,1],[0,0]],2)}</select></div><div class="f"><label>F. Lang. (0–8)</label><select id="mmseF" onchange="calc()">${selOpts([[8,8],[7,7],[6,6],[5,5],[4,4],[3,3],[2,2],[1,1],[0,0]],7)}</select></div></div><div class="fg2"><div class="f"><label>G. Visuo (0–1)</label><select id="mmseG" onchange="calc()">${selOpts([[1,'1'],[0,'0']],1)}</select></div></div></div><div class="sub">Cognition Overlay</div><div class="fg2"><div class="f"><label>Commands (0–2)</label><select id="cmdFol" onchange="calc()">${selOpts([[2,'2'],[1,'1'],[0,'0']],1)}</select></div><div class="f"><label>Attention (0–2)</label><select id="digitSpan" onchange="calc()">${selOpts([[2,'2'],[1,'1'],[0,'0']],1)}</select></div></div>`,
 `<div class="sec-h">Tone (MAS)</div><div class="sub">Upper Limb</div><div class="fg2"><div class="f"><label>Shoulder add</label><select id="masShAdd" onchange="calc()">${masOpts()}</select></div><div class="f"><label>Elbow flex</label><select id="masElFx" onchange="calc()">${masOpts()}</select></div></div><div class="fg2"><div class="f"><label>Forearm pro</label><select id="masFAPr" onchange="calc()">${masOpts()}</select></div><div class="f"><label>Wrist flex</label><select id="masWrFx" onchange="calc()">${masOpts()}</select></div></div><div class="fg2"><div class="f"><label>Finger flex</label><select id="masFinFx" onchange="calc()">${masOpts()}</select></div></div><div class="sub">Lower Limb</div><div class="fg2"><div class="f"><label>Hip add</label><select id="masHipAd" onchange="calc()">${masOpts()}</select></div><div class="f"><label>Knee pattern</label><select id="masKnee" onchange="calc()">${masOpts()}</select></div></div><div class="fg2"><div class="f"><label>Ankle PF</label><select id="masAnkPF" onchange="calc()">${masOpts()}</select></div><div class="f"><label>Toe flex</label><select id="masToeFx" onchange="calc()">${masOpts()}</select></div></div>`,
@@ -160,7 +156,7 @@ const SECTION_HTML = [
 ];
 
 // ==========================================
-// 3. CORE LOGIC
+// 2. CORE LOGIC
 // ==========================================
 function buildTabs() {
   const bar = document.getElementById('tabBar'), secWrap = document.getElementById('sections');
@@ -235,72 +231,103 @@ function renderFlags(d) {
 }
 
 // ==========================================
-// 4. CLOUD SYNC LOGIC (FIXED FOR BROWSER BLOCKS)
+// 3. LOCAL STORAGE LOGIC
 // ==========================================
 
-async function saveData(btn) {
-  const patientId = document.getElementById('pId').value;
+function saveData(btn) {
+  const patientId = document.getElementById('pId').value.trim();
   const date = document.getElementById('pDate').value;
   if (!patientId || !date) return alert("Patient ID and Date are required to save.");
-
-  const oldText = btn.textContent;
-  btn.textContent = "Saving..."; btn.disabled = true;
 
   const allInputs = {};
   document.querySelectorAll('select, input').forEach(el => { if (el.id) allInputs[el.id] = el.value; });
 
   const payload = {
-    patientId: patientId, patientName: document.getElementById('pName').value, date: date,
-    grs: document.getElementById('grsV').textContent, rpi: document.getElementById('rpiV').textContent,
-    triage: document.getElementById('triageV').textContent, inputs: allInputs
+    patientId: patientId, 
+    patientName: document.getElementById('pName').value, 
+    date: date,
+    grs: document.getElementById('grsV').textContent, 
+    rpi: document.getElementById('rpiV').textContent,
+    triage: document.getElementById('triageV').textContent, 
+    inputs: allInputs
   };
 
+  const storageKey = `NeuroRehab_${patientId}_${date}`;
+
   try {
-    // mode: 'no-cors' forces the browser to push the data without getting blocked by Google's redirect
-    await fetch(WEB_APP_URL, { 
-      method: 'POST', 
-      mode: 'no-cors',
-      body: JSON.stringify(payload) 
-    });
-    
-    // With no-cors, we don't get a readable response back, so we assume success if no error was thrown.
-    alert("Data sent to Google Sheets! Please check your spreadsheet to confirm.");
+    localStorage.setItem(storageKey, JSON.stringify(payload));
+    alert("Data saved securely to this device!");
   } catch (e) {
-    alert("Network error. Could not connect to Google Sheets.");
+    alert("Error saving data. Your browser storage might be full or blocking local data.");
     console.error(e);
-  } finally {
-    btn.textContent = oldText; btn.disabled = false;
   }
 }
 
-async function loadData(btn) {
-  const pId = document.getElementById('pId').value;
-  const pDate = document.getElementById('pDate').value;
-  if (!pId || !pDate) return alert("Enter Patient ID and Date to retrieve records.");
+function loadData(btn) {
+  const patientId = document.getElementById('pId').value.trim();
+  const date = document.getElementById('pDate').value;
+  if (!patientId || !date) return alert("Enter Patient ID and Date to retrieve records.");
 
-  const oldText = btn.textContent;
-  btn.textContent = "Loading..."; btn.disabled = true;
+  const storageKey = `NeuroRehab_${patientId}_${date}`;
 
   try {
-    // GET requests do not need no-cors, Google handles them natively.
-    const resp = await fetch(`${WEB_APP_URL}?patientId=${pId}&date=${pDate}`);
-    const text = await resp.text();
+    const savedData = localStorage.getItem(storageKey);
     
-    if (text === "Not Found" || !text || text.includes("<html")) {
-      alert("No record found for this ID and Date, or the Web App URL is incorrect.");
+    if (!savedData) {
+      alert("No record found for this ID and Date on this device.");
     } else {
-      const data = JSON.parse(text);
-      Object.keys(data).forEach(id => { const el = document.getElementById(id); if (el) el.value = data[id]; });
-      calc(); // Re-run all calculations to update the UI
+      const parsedData = JSON.parse(savedData);
+      Object.keys(parsedData.inputs).forEach(id => { 
+        const el = document.getElementById(id); 
+        if (el) el.value = parsedData.inputs[id]; 
+      });
+      calc(); 
       alert("Data retrieved successfully!");
     }
   } catch (e) {
-    alert("Error retrieving data. Check browser console for details.");
+    alert("Error retrieving data.");
     console.error(e);
-  } finally {
-    btn.textContent = oldText; btn.disabled = false;
   }
 }
+
+// The new Export to CSV function
+function exportData(btn) {
+  let csv = "Patient ID,Date,Patient Name,Global Recovery Score (GRS),Rehab Potential Index (RPI),Triage Category\n";
+  let recordsFound = 0;
+
+  for (let i = 0; i < localStorage.length; i++) {
+    let key = localStorage.key(i);
+    
+    // Check if the key belongs to our calculator
+    if (key.startsWith("NeuroRehab_")) {
+      recordsFound++;
+      let rawData = localStorage.getItem(key);
+      let data = JSON.parse(rawData);
+      
+      // Clean up text so commas in the names/categories don't break the CSV columns
+      let safeName = data.patientName ? `"${data.patientName.replace(/"/g, '""')}"` : "";
+      let safeTriage = data.triage ? `"${data.triage.replace(/"/g, '""')}"` : "";
+      
+      csv += `${data.patientId},${data.date},${safeName},${data.grs},${data.rpi},${safeTriage}\n`;
+    }
+  }
+
+  if (recordsFound === 0) {
+    return alert("No data saved on this device to export.");
+  }
+
+  // Create a hidden link to force the browser to download the file
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", "Stroke_Sarathi_Data.csv");
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
 // INITIALIZATION
 buildTabs();
 calc();
