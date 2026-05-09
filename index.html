@@ -291,43 +291,75 @@ function loadData(btn) {
 }
 
 // The new Export to CSV function
+// The upgraded Export to CSV function (Full Clinical Data)
 function exportData(btn) {
-  let csv = "Patient ID,Date,Patient Name,Global Recovery Score (GRS),Rehab Potential Index (RPI),Triage Category\n";
-  let recordsFound = 0;
+  let records = [];
+  let inputKeys = new Set();
 
+  // Pass 1: Collect all records and figure out all possible column names
   for (let i = 0; i < localStorage.length; i++) {
     let key = localStorage.key(i);
-    
-    // Check if the key belongs to our calculator
     if (key.startsWith("NeuroRehab_")) {
-      recordsFound++;
-      let rawData = localStorage.getItem(key);
-      let data = JSON.parse(rawData);
-      
-      // Clean up text so commas in the names/categories don't break the CSV columns
-      let safeName = data.patientName ? `"${data.patientName.replace(/"/g, '""')}"` : "";
-      let safeTriage = data.triage ? `"${data.triage.replace(/"/g, '""')}"` : "";
-      
-      csv += `${data.patientId},${data.date},${safeName},${data.grs},${data.rpi},${safeTriage}\n`;
+      try {
+        let data = JSON.parse(localStorage.getItem(key));
+        records.push(data);
+        // Gather every single granular input field used
+        if (data.inputs) {
+          Object.keys(data.inputs).forEach(k => inputKeys.add(k));
+        }
+      } catch(e) {}
     }
   }
 
-  if (recordsFound === 0) {
+  if (records.length === 0) {
     return alert("No data saved on this device to export.");
   }
 
-  // Create a hidden link to force the browser to download the file
+  // Pass 2: Build the CSV Header
+  // Sort the input keys so columns are consistently ordered
+  let inputsArray = Array.from(inputKeys).sort();
+  let header = ["Patient ID", "Date", "Patient Name", "GRS", "RPI", "Triage Category", ...inputsArray];
+  let csv = header.join(",") + "\n";
+
+  // Pass 3: Build the rows
+  records.forEach(data => {
+    // Clean up text so commas don't break the CSV layout
+    let safeName = data.patientName ? `"${data.patientName.replace(/"/g, '""')}"` : "";
+    let safeTriage = data.triage ? `"${data.triage.replace(/"/g, '""')}"` : "";
+
+    let row = [
+      data.patientId || "",
+      data.date || "",
+      safeName,
+      data.grs || "",
+      data.rpi || "",
+      safeTriage
+    ];
+
+    // Add the granular input data matching the header order
+    inputsArray.forEach(k => {
+      let val = (data.inputs && data.inputs[k] !== undefined) ? data.inputs[k] : "";
+      // If the dropdown text contains a comma, wrap it in quotes
+      if (typeof val === 'string' && val.includes(',')) {
+        val = `"${val.replace(/"/g, '""')}"`;
+      }
+      row.push(val);
+    });
+
+    csv += row.join(",") + "\n";
+  });
+
+  // Force the browser to download the complete file
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.setAttribute("href", url);
-  link.setAttribute("download", "Stroke_Sarathi_Data.csv");
+  link.setAttribute("download", "Stroke_Sarathi_Full_Clinical_Data.csv");
   link.style.visibility = 'hidden';
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
 }
-
 // INITIALIZATION
 buildTabs();
 calc();
