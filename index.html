@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Neuro Rehab Scoring Calculator - Local Storage</title>
+<title>Stroke Sarathi - Cloud Rehab Calculator</title>
 <style>
 :root {
   --teal: #0d7377; --teal-light: #e0f5f5; --teal-mid: #14a3a8;
@@ -17,9 +17,13 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; font-size: 14px; line-height: 1.5; color: var(--slate); background: var(--bg); }
 .app { max-width: 1140px; margin: 0 auto; padding: 1.25rem 1rem; }
-header { margin-bottom: 1.25rem; display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
+header { margin-bottom: 1.25rem; display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 1rem; justify-content: space-between;}
+.header-left { display: flex; flex-direction: column;}
 header h1 { font-size: 18px; font-weight: 700; color: var(--teal); letter-spacing: -0.02em; }
 header p { font-size: 12px; color: var(--slate-light); }
+.header-right { font-size: 12px; color: var(--slate-mid); display: flex; align-items: center; gap: 10px;}
+.logout-btn { padding: 4px 10px; background: var(--slate-light); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px;}
+.logout-btn:hover { background: var(--slate-mid); }
 .layout { display: grid; grid-template-columns: 1fr 320px; gap: 1.25rem; align-items: start; }
 @media (max-width: 820px) { .layout { grid-template-columns: 1fr; } }
 .form-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--rl); overflow: hidden; }
@@ -69,57 +73,145 @@ select:focus, input:focus { border-color: var(--teal); }
 .fd { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
 .fw { background: var(--amber); }
 .fa { background: var(--red); }
+
+/* Login Screen Styles */
+#loginScreen { max-width: 400px; margin: 10vh auto; padding: 2.5rem; background: var(--surface); border-radius: var(--rl); border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center; }
+#loginScreen h2 { color: var(--teal); margin-bottom: 0.5rem; }
+#loginScreen p { color: var(--slate-mid); font-size: 12px; margin-bottom: 1.5rem; }
+.auth-input { width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; }
+.auth-btn { width: 100%; padding: 12px; background: var(--teal); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
+.auth-btn:hover { background: var(--teal-mid); }
+#authError { color: var(--red); font-size: 12px; margin-top: 10px; display: none; }
 </style>
+
+<!-- Firebase Core Libraries (v10 compat) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<!-- Chart.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 </head>
 <body>
-<div class="app">
-<header>
-  <h1>Neuro Rehab Scoring Calculator</h1>
-  <p>GRS · RPI · Triage Classification · Domain Profile (Local Device Storage)</p>
-</header>
-<div class="layout">
-<div class="form-panel">
-  <div class="tab-bar" id="tabBar"></div>
-  <div id="sections"></div>
-</div>
-<div class="results-panel">
-  <div class="score-duo">
-    <div class="big-s">
-      <div class="bl">Global Recovery</div>
-      <div class="bv" id="grsV">—</div>
-      <div class="bb" id="grsBadge">—</div>
-    </div>
-    <div class="big-s">
-      <div class="bl">Rehab Potential</div>
-      <div class="bv" id="rpiV">—</div>
-      <div class="bb" id="rpiBadge">—</div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-h">Domain Profile (radar)</div>
-    <canvas id="radar" width="290" height="270"></canvas>
-  </div>
-  <div class="card">
-    <div class="card-h">Domain Breakdown</div>
-    <div id="domainList"></div>
-  </div>
-  <div class="card" id="triageCard">
-    <div class="card-h">Admission Triage</div>
-    <div class="triage-val" id="triageV">—</div>
-    <div class="triage-desc" id="triageD">Complete all sections to generate triage.</div>
-  </div>
-  <div class="card" id="flagsCard" style="display:none">
-    <div class="card-h">Clinical Decision Flags</div>
-    <div id="flagsList"></div>
-  </div>
-</div>
-</div>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <h2>Stroke Sarathi Registry</h2>
+  <p>Authorized Clinical Personnel Only</p>
+  <input type="email" id="txtEmail" class="auth-input" placeholder="Therapist Email">
+  <input type="password" id="txtPass" class="auth-input" placeholder="Password">
+  <button class="auth-btn" onclick="login()" id="loginBtn">Secure Log In</button>
+  <div id="authError"></div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<!-- MAIN APP (HIDDEN UNTIL LOGGED IN) -->
+<div class="app" id="mainApp" style="display: none;">
+  <header>
+    <div class="header-left">
+      <h1>Neuro Rehab Scoring Calculator</h1>
+      <p>GRS · RPI · Triage Classification (Cloud Synced Database)</p>
+    </div>
+    <div class="header-right">
+      <span id="userDisplay"></span>
+      <button class="logout-btn" onclick="logout()">Log Out</button>
+    </div>
+  </header>
+  
+  <div class="layout">
+  <div class="form-panel">
+    <div class="tab-bar" id="tabBar"></div>
+    <div id="sections"></div>
+  </div>
+  <div class="results-panel">
+    <div class="score-duo">
+      <div class="big-s">
+        <div class="bl">Global Recovery</div>
+        <div class="bv" id="grsV">—</div>
+        <div class="bb" id="grsBadge">—</div>
+      </div>
+      <div class="big-s">
+        <div class="bl">Rehab Potential</div>
+        <div class="bv" id="rpiV">—</div>
+        <div class="bb" id="rpiBadge">—</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h">Domain Profile (radar)</div>
+      <canvas id="radar" width="290" height="270"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-h">Domain Breakdown</div>
+      <div id="domainList"></div>
+    </div>
+    <div class="card" id="triageCard">
+      <div class="card-h">Admission Triage</div>
+      <div class="triage-val" id="triageV">—</div>
+      <div class="triage-desc" id="triageD">Complete all sections to generate triage.</div>
+    </div>
+    <div class="card" id="flagsCard" style="display:none">
+      <div class="card-h">Clinical Decision Flags</div>
+      <div id="flagsList"></div>
+    </div>
+  </div>
+  </div>
+</div>
+
 <script>
 // ==========================================
-// 1. TABS AND SECTIONS DEFINITION
+// 1. FIREBASE SETUP & AUTHENTICATION
+// ==========================================
+const firebaseConfig = {
+  apiKey: "AIzaSyBMhnYkJ-7aEd3M7PVLgjKTB5rcm9OXnyc",
+  authDomain: "stroke-registry.firebaseapp.com",
+  projectId: "stroke-registry",
+  storageBucket: "stroke-registry.firebasestorage.app",
+  messagingSenderId: "535170173368",
+  appId: "1:535170173368:web:d706aed1cc475b47cfa74d"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const auth = firebase.auth();
+
+// Listen for Login State Changes
+auth.onAuthStateChanged(user => {
+  if (user) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('mainApp').style.display = 'block';
+    document.getElementById('userDisplay').textContent = "Logged in: " + user.email;
+  } else {
+    document.getElementById('loginScreen').style.display = 'block';
+    document.getElementById('mainApp').style.display = 'none';
+    document.getElementById('txtPass').value = ''; 
+  }
+});
+
+// Login Logic
+async function login() {
+  const email = document.getElementById('txtEmail').value.trim();
+  const pass = document.getElementById('txtPass').value;
+  const btn = document.getElementById('loginBtn');
+  const errBox = document.getElementById('authError');
+  
+  if(!email || !pass) return;
+  btn.textContent = "Authenticating..."; btn.disabled = true;
+  errBox.style.display = 'none';
+
+  try {
+    await auth.signInWithEmailAndPassword(email, pass);
+  } catch (error) {
+    errBox.textContent = error.message;
+    errBox.style.display = 'block';
+  } finally {
+    btn.textContent = "Secure Log In"; btn.disabled = false;
+  }
+}
+
+// Logout Logic
+function logout() { auth.signOut(); }
+
+// ==========================================
+// 2. TABS AND SECTIONS DEFINITION
 // ==========================================
 const TABS = ['Demographics', 'Cognition','Tone','Strength','Trunk','Motor Tasks','Sensory','Mobility','Endurance','Motor FIM'];
 let cogMode = 'gcs'; let radarChart = null;
@@ -137,12 +229,12 @@ const SECTION_HTML = [
 <div class="f" style="margin-top:10px; margin-bottom: 20px;">
   <label>Patient Name</label><input type="text" id="pName" placeholder="Full Name" style="padding:8px;">
 </div>
-<div class="sec-h">Device Storage Sync</div>
-<p class="hint">Data is saved securely to this device's browser memory. You can export all saved data to an Excel-friendly CSV file.</p>
+<div class="sec-h">Cloud Database Sync</div>
+<p class="hint">Data is securely saved and retrieved from the central Firebase cloud registry.</p>
 <div class="nav-row" style="border:none; padding-top:0; margin-top:0; justify-content: flex-start;">
-  <button class="nbtn p" style="background:#16a34a; border-color:#16a34a;" onclick="saveData(this)">Save to Device</button>
+  <button class="nbtn p" style="background:#16a34a; border-color:#16a34a;" onclick="saveData(this)">Save to Cloud</button>
   <button class="nbtn" onclick="loadData(this)">Retrieve Data</button>
-  <button class="nbtn" style="border-color:#14a3a8; color:#14a3a8;" onclick="exportData(this)">Export All Data (CSV)</button>
+  <button class="nbtn" style="border-color:#14a3a8; color:#14a3a8;" onclick="exportData(this)">Export Cloud Data (CSV)</button>
 </div>`,
 `<div class="sec-h">Cognition</div><div class="tog"><button class="tb on" id="gcsBtn" onclick="setCogMode('gcs')">GCS</button><button class="tb" id="mmseBtn" onclick="setCogMode('mmse')">MMSE</button></div><div id="gcsDiv"><div class="fg3"><div class="f"><label>Eye (E) 1–4</label><select id="gcsE" onchange="calc()">${selOpts([[4,'4'],[3,'3'],[2,'2'],[1,'1']],4)}</select></div><div class="f"><label>Verbal (V) 1–5</label><select id="gcsV" onchange="calc()">${selOpts([[5,'5'],[4,'4'],[3,'3'],[2,'2'],[1,'1']],4)}</select></div><div class="f"><label>Motor (M) 1–6</label><select id="gcsM" onchange="calc()">${selOpts([[6,'6'],[5,'5'],[4,'4'],[3,'3'],[2,'2'],[1,'1']],5)}</select></div></div></div><div id="mmseDiv" style="display:none"><div class="fg2"><div class="f"><label>A. Time (0–5)</label><select id="mmseA" onchange="calc()">${selOpts([[5,5],[4,4],[3,3],[2,2],[1,1],[0,0]],5)}</select></div><div class="f"><label>B. Place (0–5)</label><select id="mmseB" onchange="calc()">${selOpts([[5,5],[4,4],[3,3],[2,2],[1,1],[0,0]],5)}</select></div></div><div class="fg2"><div class="f"><label>C. Reg. (0–3)</label><select id="mmseC" onchange="calc()">${selOpts([[3,3],[2,2],[1,1],[0,0]],3)}</select></div><div class="f"><label>D. Attn (0–5)</label><select id="mmseD" onchange="calc()">${selOpts([[5,5],[4,4],[3,3],[2,2],[1,1],[0,0]],4)}</select></div></div><div class="fg2"><div class="f"><label>E. Recall (0–3)</label><select id="mmseE" onchange="calc()">${selOpts([[3,3],[2,2],[1,1],[0,0]],2)}</select></div><div class="f"><label>F. Lang. (0–8)</label><select id="mmseF" onchange="calc()">${selOpts([[8,8],[7,7],[6,6],[5,5],[4,4],[3,3],[2,2],[1,1],[0,0]],7)}</select></div></div><div class="fg2"><div class="f"><label>G. Visuo (0–1)</label><select id="mmseG" onchange="calc()">${selOpts([[1,'1'],[0,'0']],1)}</select></div></div></div><div class="sub">Cognition Overlay</div><div class="fg2"><div class="f"><label>Commands (0–2)</label><select id="cmdFol" onchange="calc()">${selOpts([[2,'2'],[1,'1'],[0,'0']],1)}</select></div><div class="f"><label>Attention (0–2)</label><select id="digitSpan" onchange="calc()">${selOpts([[2,'2'],[1,'1'],[0,'0']],1)}</select></div></div>`,
 `<div class="sec-h">Tone (MAS)</div><div class="sub">Upper Limb</div><div class="fg2"><div class="f"><label>Shoulder add</label><select id="masShAdd" onchange="calc()">${masOpts()}</select></div><div class="f"><label>Elbow flex</label><select id="masElFx" onchange="calc()">${masOpts()}</select></div></div><div class="fg2"><div class="f"><label>Forearm pro</label><select id="masFAPr" onchange="calc()">${masOpts()}</select></div><div class="f"><label>Wrist flex</label><select id="masWrFx" onchange="calc()">${masOpts()}</select></div></div><div class="fg2"><div class="f"><label>Finger flex</label><select id="masFinFx" onchange="calc()">${masOpts()}</select></div></div><div class="sub">Lower Limb</div><div class="fg2"><div class="f"><label>Hip add</label><select id="masHipAd" onchange="calc()">${masOpts()}</select></div><div class="f"><label>Knee pattern</label><select id="masKnee" onchange="calc()">${masOpts()}</select></div></div><div class="fg2"><div class="f"><label>Ankle PF</label><select id="masAnkPF" onchange="calc()">${masOpts()}</select></div><div class="f"><label>Toe flex</label><select id="masToeFx" onchange="calc()">${masOpts()}</select></div></div>`,
@@ -156,7 +248,7 @@ const SECTION_HTML = [
 ];
 
 // ==========================================
-// 2. CORE LOGIC
+// 3. CORE LOGIC
 // ==========================================
 function buildTabs() {
   const bar = document.getElementById('tabBar'), secWrap = document.getElementById('sections');
@@ -231,16 +323,22 @@ function renderFlags(d) {
 }
 
 // ==========================================
-// 3. LOCAL STORAGE LOGIC
+// 4. FIREBASE DATA LOGIC
 // ==========================================
 
-function saveData(btn) {
+async function saveData(btn) {
   const patientId = document.getElementById('pId').value.trim();
   const date = document.getElementById('pDate').value;
   if (!patientId || !date) return alert("Patient ID and Date are required to save.");
 
+  const oldText = btn.textContent;
+  btn.textContent = "Saving..."; btn.disabled = true;
+
   const allInputs = {};
-  document.querySelectorAll('select, input').forEach(el => { if (el.id) allInputs[el.id] = el.value; });
+  // Avoid saving login textboxes
+  document.querySelectorAll('select, input').forEach(el => { 
+    if (el.id && el.id !== 'txtEmail' && el.id !== 'txtPass') allInputs[el.id] = el.value; 
+  });
 
   const payload = {
     patientId: patientId, 
@@ -249,117 +347,130 @@ function saveData(btn) {
     grs: document.getElementById('grsV').textContent, 
     rpi: document.getElementById('rpiV').textContent,
     triage: document.getElementById('triageV').textContent, 
-    inputs: allInputs
+    inputs: allInputs,
+    savedBy: auth.currentUser.email,
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()
   };
 
-  const storageKey = `NeuroRehab_${patientId}_${date}`;
+  // e.g. "PT-1001_2026-06-04"
+  const documentKey = `${patientId}_${date}`;
 
   try {
-    localStorage.setItem(storageKey, JSON.stringify(payload));
-    alert("Data saved securely to this device!");
+    await db.collection("assessments").doc(documentKey).set(payload);
+    alert("Data saved securely to the Cloud Database!");
   } catch (e) {
-    alert("Error saving data. Your browser storage might be full or blocking local data.");
+    alert("Error saving to database: " + e.message);
     console.error(e);
+  } finally {
+    btn.textContent = oldText; btn.disabled = false;
   }
 }
 
-function loadData(btn) {
+async function loadData(btn) {
   const patientId = document.getElementById('pId').value.trim();
   const date = document.getElementById('pDate').value;
   if (!patientId || !date) return alert("Enter Patient ID and Date to retrieve records.");
 
-  const storageKey = `NeuroRehab_${patientId}_${date}`;
+  const oldText = btn.textContent;
+  btn.textContent = "Loading..."; btn.disabled = true;
+  
+  const documentKey = `${patientId}_${date}`;
 
   try {
-    const savedData = localStorage.getItem(storageKey);
+    const doc = await db.collection("assessments").doc(documentKey).get();
     
-    if (!savedData) {
-      alert("No record found for this ID and Date on this device.");
+    if (!doc.exists) {
+      alert("No record found in the database for this ID and Date.");
     } else {
-      const parsedData = JSON.parse(savedData);
-      Object.keys(parsedData.inputs).forEach(id => { 
-        const el = document.getElementById(id); 
-        if (el) el.value = parsedData.inputs[id]; 
-      });
+      const data = doc.data();
+      if(data.inputs) {
+        Object.keys(data.inputs).forEach(id => { 
+          const el = document.getElementById(id); 
+          if (el) el.value = data.inputs[id]; 
+        });
+      }
       calc(); 
       alert("Data retrieved successfully!");
     }
   } catch (e) {
-    alert("Error retrieving data.");
+    alert("Error retrieving data: " + e.message);
     console.error(e);
+  } finally {
+    btn.textContent = oldText; btn.disabled = false;
   }
 }
 
-// The new Export to CSV function
-// The upgraded Export to CSV function (Full Clinical Data)
-function exportData(btn) {
-  let records = [];
-  let inputKeys = new Set();
+async function exportData(btn) {
+  const oldText = btn.textContent;
+  btn.textContent = "Exporting..."; btn.disabled = true;
 
-  // Pass 1: Collect all records and figure out all possible column names
-  for (let i = 0; i < localStorage.length; i++) {
-    let key = localStorage.key(i);
-    if (key.startsWith("NeuroRehab_")) {
-      try {
-        let data = JSON.parse(localStorage.getItem(key));
-        records.push(data);
-        // Gather every single granular input field used
-        if (data.inputs) {
-          Object.keys(data.inputs).forEach(k => inputKeys.add(k));
-        }
-      } catch(e) {}
+  try {
+    const snapshot = await db.collection("assessments").get();
+    
+    if (snapshot.empty) {
+      alert("No patient data found in the cloud database.");
+      btn.textContent = oldText; btn.disabled = false;
+      return;
     }
-  }
 
-  if (records.length === 0) {
-    return alert("No data saved on this device to export.");
-  }
+    let records = [];
+    let inputKeys = new Set();
 
-  // Pass 2: Build the CSV Header
-  // Sort the input keys so columns are consistently ordered
-  let inputsArray = Array.from(inputKeys).sort();
-  let header = ["Patient ID", "Date", "Patient Name", "GRS", "RPI", "Triage Category", ...inputsArray];
-  let csv = header.join(",") + "\n";
-
-  // Pass 3: Build the rows
-  records.forEach(data => {
-    // Clean up text so commas don't break the CSV layout
-    let safeName = data.patientName ? `"${data.patientName.replace(/"/g, '""')}"` : "";
-    let safeTriage = data.triage ? `"${data.triage.replace(/"/g, '""')}"` : "";
-
-    let row = [
-      data.patientId || "",
-      data.date || "",
-      safeName,
-      data.grs || "",
-      data.rpi || "",
-      safeTriage
-    ];
-
-    // Add the granular input data matching the header order
-    inputsArray.forEach(k => {
-      let val = (data.inputs && data.inputs[k] !== undefined) ? data.inputs[k] : "";
-      // If the dropdown text contains a comma, wrap it in quotes
-      if (typeof val === 'string' && val.includes(',')) {
-        val = `"${val.replace(/"/g, '""')}"`;
+    snapshot.forEach(doc => {
+      let data = doc.data();
+      records.push(data);
+      if (data.inputs) {
+        Object.keys(data.inputs).forEach(k => inputKeys.add(k));
       }
-      row.push(val);
     });
 
-    csv += row.join(",") + "\n";
-  });
+    let inputsArray = Array.from(inputKeys).sort();
+    let header = ["Patient ID", "Date", "Patient Name", "Saved By Therapist", "GRS", "RPI", "Triage Category", ...inputsArray];
+    let csv = header.join(",") + "\n";
 
-  // Force the browser to download the complete file
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.setAttribute("href", url);
-  link.setAttribute("download", "Stroke_Sarathi_Full_Clinical_Data.csv");
-  link.style.visibility = 'hidden';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+    records.forEach(data => {
+      let safeName = data.patientName ? `"${data.patientName.replace(/"/g, '""')}"` : "";
+      let safeTriage = data.triage ? `"${data.triage.replace(/"/g, '""')}"` : "";
+
+      let row = [
+        data.patientId || "",
+        data.date || "",
+        safeName,
+        data.savedBy || "",
+        data.grs || "",
+        data.rpi || "",
+        safeTriage
+      ];
+
+      inputsArray.forEach(k => {
+        let val = (data.inputs && data.inputs[k] !== undefined) ? data.inputs[k] : "";
+        if (typeof val === 'string' && val.includes(',')) {
+          val = `"${val.replace(/"/g, '""')}"`;
+        }
+        row.push(val);
+      });
+
+      csv += row.join(",") + "\n";
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "Stroke_Sarathi_Cloud_Export.csv");
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+  } catch (e) {
+    alert("Error exporting data: " + e.message);
+    console.error(e);
+  } finally {
+    btn.textContent = oldText; btn.disabled = false;
+  }
 }
+
 // INITIALIZATION
 buildTabs();
 calc();
