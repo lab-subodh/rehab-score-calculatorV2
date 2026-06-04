@@ -75,7 +75,7 @@ select { cursor: pointer; }
 .fw { background: var(--amber); }
 .fa { background: var(--red); }
 
-/* Login Screen Styles */
+/* Login Screen */
 #loginScreen { max-width: 400px; margin: 10vh auto; padding: 2.5rem; background: var(--surface); border-radius: var(--rl); border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center; }
 #loginScreen h2 { color: var(--teal); margin-bottom: 0.5rem; }
 #loginScreen p { color: var(--slate-mid); font-size: 12px; margin-bottom: 1.5rem; }
@@ -83,24 +83,59 @@ select { cursor: pointer; }
 .auth-btn { width: 100%; padding: 12px; background: var(--teal); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
 .auth-btn:hover { background: var(--teal-mid); }
 #authError { color: var(--red); font-size: 12px; margin-top: 10px; display: none; }
+
+/* Modal for Patient Directory */
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 999; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+.modal-content { background: var(--surface); width: 90%; max-width: 500px; border-radius: var(--rl); padding: 1.5rem; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+.modal-header h2 { font-size: 16px; color: var(--teal); }
+.close-modal { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--slate-light); }
+.close-modal:hover { color: var(--red); }
+.dir-list { overflow-y: auto; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.dir-item { padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: background 0.2s; }
+.dir-item:hover { background: var(--teal-light); border-color: var(--teal-mid); }
+.dir-item-left { display: flex; flex-direction: column; gap: 3px; }
+.dir-name { font-weight: 600; color: var(--slate); font-size: 13px; }
+.dir-sub { font-size: 11px; color: var(--slate-mid); }
+.dir-btn { padding: 5px 12px; background: var(--teal); color: white; border: none; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; }
 </style>
 
+<!-- Firebase Core Libraries (v10 compat) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<!-- Chart.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 </head>
 <body>
 
+<!-- LOGIN SCREEN -->
 <div id="loginScreen">
   <h2>Stroke Sarathi Registry</h2>
   <p>Authorized Clinical Personnel Only</p>
   <input type="email" id="txtEmail" class="auth-input" placeholder="Therapist Email">
   <input type="password" id="txtPass" class="auth-input" placeholder="Password">
+  
+  <a href="#" onclick="forgotPassword()" style="font-size:11px; color:var(--teal); display:block; margin-bottom:15px; text-decoration:none; text-align:right;">Forgot Password?</a>
+  
   <button class="auth-btn" onclick="login()" id="loginBtn">Secure Log In</button>
   <div id="authError"></div>
 </div>
 
+<!-- PATIENT DIRECTORY MODAL -->
+<div class="modal-overlay" id="directoryModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Patient Directory</h2>
+      <button class="close-modal" onclick="closeDirectory()">×</button>
+    </div>
+    <div class="dir-list" id="directoryList">
+      <!-- Records load here -->
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
 <div class="app" id="mainApp" style="display: none;">
   <header>
     <div class="header-left">
@@ -109,6 +144,7 @@ select { cursor: pointer; }
     </div>
     <div class="header-right">
       <span id="userDisplay"></span>
+      <button class="logout-btn" onclick="changePassword()" style="margin-left: 10px; background-color: var(--teal);">Change Password</button>
       <button class="logout-btn" onclick="logout()">Log Out</button>
     </div>
   </header>
@@ -203,6 +239,43 @@ async function login() {
 
 function logout() { auth.signOut(); }
 
+// Forgot Password Feature
+async function forgotPassword() {
+  const email = document.getElementById('txtEmail').value.trim();
+  if (!email) {
+    return alert("Please type your email address into the box first, then click 'Forgot Password?'.");
+  }
+  
+  try {
+    await auth.sendPasswordResetEmail(email);
+    alert(`A password reset link has been sent to ${email}. Please check your inbox (and spam folder).`);
+  } catch (error) {
+    alert("Error sending reset email: " + error.message);
+  }
+}
+
+// Change Password Feature (Inside App)
+async function changePassword() {
+  const newPassword = prompt("Please enter your new password (must be at least 6 characters):");
+  if (!newPassword) return; // User clicked cancel
+  
+  if (newPassword.length < 6) {
+    return alert("Error: Your new password must be at least 6 characters long.");
+  }
+  
+  try {
+    await auth.currentUser.updatePassword(newPassword);
+    alert("Your password has been updated successfully! Please log in with your new password.");
+    logout(); // Force log out to ensure security session resets
+  } catch (error) {
+    if (error.code === 'auth/requires-recent-login') {
+      alert("For security purposes, you must have logged in recently to change your password. Please log out, log back in, and try again.");
+    } else {
+      alert("Error changing password: " + error.message);
+    }
+  }
+}
+
 // ==========================================
 // 2. TABS AND SECTIONS DEFINITION
 // ==========================================
@@ -238,10 +311,10 @@ const SECTION_HTML = [
   <textarea id="pObs" rows="3" placeholder="Enter clinical notes, wound status, or general observations here..." style="padding:8px; border:1px solid var(--border); border-radius:6px; font-family:inherit; font-size:12px; resize:vertical;"></textarea>
 </div>
 <div class="sec-h">Cloud Database Sync</div>
-<p class="hint">Patient ID acts as the unique key. Use "Compare History" to map this patient's progress over time on the Radar Chart.</p>
+<p class="hint">Use the Patient Directory to load previous assessments, or Compare History to map progress over time.</p>
 <div class="nav-row" style="border:none; padding-top:0; margin-top:0; justify-content: flex-start;">
   <button class="nbtn p" style="background:#16a34a; border-color:#16a34a;" onclick="saveData(this)">Save to Cloud</button>
-  <button class="nbtn" onclick="loadData(this)">Retrieve Date</button>
+  <button class="nbtn" onclick="openDirectory()">📂 Patient Directory</button>
   <button class="nbtn" style="border-color:#b45309; color:#b45309;" onclick="compareHistory(this)">Compare History</button>
   <button class="nbtn" style="border-color:#14a3a8; color:#14a3a8;" onclick="exportData(this)">Export CSV</button>
 </div>`,
@@ -300,49 +373,24 @@ function renderResults(d) {
   document.getElementById('rpiV').textContent = rpi + '%'; document.getElementById('rpiBadge').className = 'bb ' + rpiCat[0]; document.getElementById('rpiBadge').textContent = rpiCat[1];
   document.getElementById('domainList').innerHTML = [ {lbl:'Cognition', v: Math.round(d.C_final)}, {lbl:'Strength', v: Math.round(d.S)}, {lbl:'Tone ctrl.', v: Math.round(100-d.TS)}, {lbl:'Trunk', v: Math.round(d.TR_pct)}, {lbl:'Motor Tasks', v: Math.round(d.T_pct)}, {lbl:'Motor Final', v: Math.round(d.M_final)}, {lbl:'Mot. Efficiency', v: Math.round(d.ME)}, {lbl:'Sensory', v: Math.round(d.SP_pct)}, {lbl:'Mobility', v: Math.round(d.FAC_pct)}, {lbl:'Endurance', v: Math.round(d.CF_pct)}, {lbl:'FIM Func', v: Math.round(d.F)} ].map(dm => `<div class="domain-row"><div class="dr-lbl">${dm.lbl}</div><div class="dr-bar-wrap"><div class="dr-bar" style="width:${dm.v}%;background:${dm.v >= 70 ? '#16a34a' : dm.v >= 40 ? '#b45309' : '#dc2626'}"></div></div><div class="dr-val">${dm.v}%</div></div>`).join('');
   
-  // Create an array of values in standard order to feed into the chart
   const chartVals = [Math.round(d.C_final), Math.round(d.S), Math.round(100-d.TS), Math.round(d.SP_pct), Math.round(d.FAC_pct), Math.round(d.CF_pct), Math.round(d.F), Math.round(d.T_pct)];
   updateRadar(chartVals); renderTriage(d); renderFlags(d);
 }
 
 function updateRadar(values) {
   if (radarChart) { 
-    // Reset to a single dataset mode (Current Assessment)
-    radarChart.data.datasets = [{ 
-      label: 'Current Assessment', 
-      data: values, 
-      fill: true, 
-      backgroundColor: 'rgba(13,115,119,0.15)', 
-      borderColor: '#0d7377', 
-      borderWidth: 2, 
-      pointBackgroundColor: '#0d7377', 
-      pointRadius: 3 
-    }];
-    radarChart.options.plugins.legend.display = false; // Hide legend for single assessment
+    radarChart.data.datasets = [{ label: 'Current Assessment', data: values, fill: true, backgroundColor: 'rgba(13,115,119,0.15)', borderColor: '#0d7377', borderWidth: 2, pointBackgroundColor: '#0d7377', pointRadius: 3 }];
+    radarChart.options.plugins.legend.display = false;
     radarChart.update(); 
     return; 
   }
-  
   radarChart = new Chart(document.getElementById('radar').getContext('2d'), { 
     type: 'radar', 
     data: { 
       labels: ['Cognition','Strength','Tone ctrl.','Sensory','Mobility','Endurance','FIM Func.','Mot. Tasks'], 
-      datasets: [{ 
-        label: 'Current Assessment',
-        data: values, 
-        fill: true, 
-        backgroundColor: 'rgba(13,115,119,0.15)', 
-        borderColor: '#0d7377', 
-        borderWidth: 2, 
-        pointBackgroundColor: '#0d7377', 
-        pointRadius: 3 
-      }] 
+      datasets: [{ label: 'Current Assessment', data: values, fill: true, backgroundColor: 'rgba(13,115,119,0.15)', borderColor: '#0d7377', borderWidth: 2, pointBackgroundColor: '#0d7377', pointRadius: 3 }] 
     }, 
-    options: { 
-      responsive: false, 
-      scales: { r: { min: 0, max: 100, ticks: { stepSize: 25, font: {size: 9}, color: '#94a3b8' }, pointLabels: { font: {size: 10}, color: '#475569' } } }, 
-      plugins: { legend: { display: false, labels: {boxWidth: 10, font: {size: 10}} } } 
-    } 
+    options: { responsive: false, scales: { r: { min: 0, max: 100, ticks: { stepSize: 25, font: {size: 9}, color: '#94a3b8' }, pointLabels: { font: {size: 10}, color: '#475569' } } }, plugins: { legend: { display: false, labels: {boxWidth: 10, font: {size: 10}} } } } 
   });
 }
 
@@ -370,7 +418,7 @@ function renderFlags(d) {
 }
 
 // ==========================================
-// 4. FIREBASE DATA LOGIC
+// 4. FIREBASE DATA LOGIC & DIRECTORY
 // ==========================================
 
 async function saveData(btn) {
@@ -382,7 +430,6 @@ async function saveData(btn) {
   btn.textContent = "Saving..."; btn.disabled = true;
 
   const allInputs = {};
-  // Now includes Textareas
   document.querySelectorAll('select, input, textarea').forEach(el => { 
     if (el.id && el.id !== 'txtEmail' && el.id !== 'txtPass') allInputs[el.id] = el.value; 
   });
@@ -398,7 +445,7 @@ async function saveData(btn) {
     grs: document.getElementById('grsV').textContent, 
     rpi: document.getElementById('rpiV').textContent,
     triage: document.getElementById('triageV').textContent, 
-    radarChartData: radarChart.data.datasets[0].data, // Invisibly save the chart coordinates
+    radarChartData: radarChart.data.datasets[0].data,
     inputs: allInputs,
     savedBy: auth.currentUser.email,
     timestamp: firebase.firestore.FieldValue.serverTimestamp()
@@ -417,37 +464,82 @@ async function saveData(btn) {
   }
 }
 
-async function loadData(btn) {
-  const patientId = document.getElementById('pId').value.trim();
-  const date = document.getElementById('pDate').value;
-  if (!patientId || !date) return alert("Enter Patient ID and Date to retrieve records.");
+// DIRECTORY LOGIC
+function openDirectory() {
+  const modal = document.getElementById('directoryModal');
+  const list = document.getElementById('directoryList');
+  list.innerHTML = '<p style="text-align:center; padding: 20px; color:var(--slate-mid);">Loading patient records from cloud...</p>';
+  modal.style.display = 'flex';
 
-  const oldText = btn.textContent;
-  btn.textContent = "Loading..."; btn.disabled = true;
-  
-  const documentKey = `${patientId}_${date}`;
-
-  try {
-    const doc = await db.collection("assessments").doc(documentKey).get();
+  db.collection("assessments").get().then(snapshot => {
+    if (snapshot.empty) {
+      list.innerHTML = '<p style="text-align:center; padding: 20px; color:var(--slate-mid);">No records found in the database.</p>';
+      return;
+    }
     
-    if (!doc.exists) {
-      alert("No record found in the database for this ID and Date.");
-    } else {
+    let records = [];
+    snapshot.forEach(doc => records.push({ id: doc.id, data: doc.data() }));
+
+    // Sort by date (newest first)
+    records.sort((a,b) => new Date(b.data.date) - new Date(a.data.date));
+
+    let html = '';
+    records.forEach(rec => {
+      const d = rec.data;
+      const name = d.patientName || 'Unknown Patient';
+      const grs = d.grs || '--';
+      
+      html += `
+        <div class="dir-item" onclick="loadSpecificRecord('${rec.id}')">
+          <div class="dir-item-left">
+            <span class="dir-name">${name} (${d.patientId})</span>
+            <span class="dir-sub">Assessed: ${d.date} | GRS: ${grs}</span>
+          </div>
+          <button class="dir-btn">Load</button>
+        </div>
+      `;
+    });
+    list.innerHTML = html;
+  }).catch(e => {
+    list.innerHTML = '<p style="text-align:center; color:var(--red);">Error loading records.</p>';
+    console.error(e);
+  });
+}
+
+function closeDirectory() {
+  document.getElementById('directoryModal').style.display = 'none';
+}
+
+async function loadSpecificRecord(docId) {
+  closeDirectory(); // Close the modal window
+  try {
+    const doc = await db.collection("assessments").doc(docId).get();
+    if (doc.exists) {
       const data = doc.data();
+      
+      // Populate text fields
+      document.getElementById('pId').value = data.patientId || '';
+      document.getElementById('pDate').value = data.date || '';
+      document.getElementById('pName').value = data.patientName || '';
+      document.getElementById('pAge').value = data.age || '';
+      document.getElementById('pGen').value = data.gender || '';
+      document.getElementById('pCont').value = data.contact || '';
+      document.getElementById('pObs').value = data.observations || '';
+
+      // Populate scores
       if(data.inputs) {
         Object.keys(data.inputs).forEach(id => { 
           const el = document.getElementById(id); 
           if (el) el.value = data.inputs[id]; 
         });
       }
+      
+      // Run math to update visual dashboard
       calc(); 
-      alert("Data retrieved successfully!");
     }
   } catch (e) {
     alert("Error retrieving data: " + e.message);
     console.error(e);
-  } finally {
-    btn.textContent = oldText; btn.disabled = false;
   }
 }
 
@@ -459,7 +551,6 @@ async function compareHistory(btn) {
   btn.textContent = "Mapping..."; btn.disabled = true;
 
   try {
-    // Grab all records for this specific patient
     const snapshot = await db.collection("assessments").where("patientId", "==", patientId).get();
     
     if (snapshot.empty) {
@@ -470,20 +561,17 @@ async function compareHistory(btn) {
 
     let records = [];
     snapshot.forEach(doc => records.push(doc.data()));
-    
-    // Sort chronologically by date
     records.sort((a,b) => new Date(a.date) - new Date(b.date));
 
-    // Define a palette of distinct colors for the overlay
     const colorPalette = ['#0d7377', '#b45309', '#16a34a', '#8b5cf6', '#dc2626'];
     
     const historicalDatasets = records.map((rec, i) => {
       const c = colorPalette[i % colorPalette.length];
       return {
         label: rec.date || 'Unknown Date',
-        data: rec.radarChartData || [], // Pull the saved coordinates
+        data: rec.radarChartData || [],
         fill: true,
-        backgroundColor: c + '33', // Adding '33' makes the color semi-transparent
+        backgroundColor: c + '33',
         borderColor: c,
         borderWidth: 2,
         pointBackgroundColor: c,
@@ -493,12 +581,10 @@ async function compareHistory(btn) {
 
     if (radarChart) {
       radarChart.data.datasets = historicalDatasets;
-      radarChart.options.plugins.legend.display = true; // Turn the legend on so we can see the dates
+      radarChart.options.plugins.legend.display = true;
       radarChart.update();
     }
     
-    alert(`Successfully overlaid ${records.length} assessments on the Radar Chart!`);
-
   } catch (e) {
     alert("Error loading history: " + e.message);
     console.error(e);
@@ -524,9 +610,7 @@ async function exportData(btn) {
     snapshot.forEach(doc => {
       let data = doc.data();
       records.push(data);
-      if (data.inputs) {
-        Object.keys(data.inputs).forEach(k => inputKeys.add(k));
-      }
+      if (data.inputs) Object.keys(data.inputs).forEach(k => inputKeys.add(k));
     });
 
     let inputsArray = Array.from(inputKeys).sort();
