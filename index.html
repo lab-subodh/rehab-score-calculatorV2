@@ -40,13 +40,14 @@ header p { font-size: 12px; color: var(--slate-light); }
 .fg3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px; }
 .f { display: flex; flex-direction: column; gap: 3px; }
 .f label { font-size: 11px; color: var(--slate-mid); font-weight: 500; }
-select, input { width: 100%; padding: 5px 7px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--slate); font-size: 12px; font-family: inherit; cursor: pointer; outline: none; }
-select:focus, input:focus { border-color: var(--teal); }
+select, input, textarea { width: 100%; padding: 5px 7px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--slate); font-size: 12px; font-family: inherit; outline: none; }
+select:focus, input:focus, textarea:focus { border-color: var(--teal); }
+select { cursor: pointer; }
 .tog { display: inline-flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 1rem; }
 .tb { padding: 5px 14px; border: none; background: transparent; color: var(--slate-mid); cursor: pointer; font-size: 12px; font-family: inherit; }
 .tb.on { background: var(--teal); color: #fff; font-weight: 600; }
 .nav-row { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border); }
-.nbtn { padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; color: var(--slate); cursor: pointer; font-size: 12px; font-family: inherit; }
+.nbtn { padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; color: var(--slate); cursor: pointer; font-size: 12px; font-family: inherit; font-weight: 500; }
 .nbtn:hover { background: var(--bg); }
 .nbtn.p { background: var(--teal); color: #fff; border-color: var(--teal); }
 .results-panel { position: sticky; top: 1rem; display: flex; flex-direction: column; gap: 10px; }
@@ -84,16 +85,13 @@ select:focus, input:focus { border-color: var(--teal); }
 #authError { color: var(--red); font-size: 12px; margin-top: 10px; display: none; }
 </style>
 
-<!-- Firebase Core Libraries (v10 compat) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<!-- Chart.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 </head>
 <body>
 
-<!-- LOGIN SCREEN -->
 <div id="loginScreen">
   <h2>Stroke Sarathi Registry</h2>
   <p>Authorized Clinical Personnel Only</p>
@@ -103,7 +101,6 @@ select:focus, input:focus { border-color: var(--teal); }
   <div id="authError"></div>
 </div>
 
-<!-- MAIN APP (HIDDEN UNTIL LOGGED IN) -->
 <div class="app" id="mainApp" style="display: none;">
   <header>
     <div class="header-left">
@@ -168,12 +165,10 @@ const firebaseConfig = {
   appId: "1:535170173368:web:d706aed1cc475b47cfa74d"
 };
 
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
 
-// Listen for Login State Changes
 auth.onAuthStateChanged(user => {
   if (user) {
     document.getElementById('loginScreen').style.display = 'none';
@@ -186,7 +181,6 @@ auth.onAuthStateChanged(user => {
   }
 });
 
-// Login Logic
 async function login() {
   const email = document.getElementById('txtEmail').value.trim();
   const pass = document.getElementById('txtPass').value;
@@ -207,7 +201,6 @@ async function login() {
   }
 }
 
-// Logout Logic
 function logout() { auth.signOut(); }
 
 // ==========================================
@@ -221,20 +214,36 @@ function fimOpts(def=4) { const opts = [[7,'7 — Complete independence'],[6,'6 
 function selOpts(pairs, def) { return pairs.map(([v,t]) => `<option value="${v}"${v===def?' selected':''}>${t}</option>`).join(''); }
 
 const SECTION_HTML = [
+// INDEX 0: EXPANDED DEMOGRAPHICS
 `<div class="sec-h">Patient Demographics</div>
-<div class="fg2">
+<div class="fg3">
   <div class="f"><label>Patient ID (Required)</label><input type="text" id="pId" placeholder="e.g. PT-1001" style="padding:8px;"></div>
   <div class="f"><label>Assessment Date (Required)</label><input type="date" id="pDate" style="padding:8px;"></div>
+  <div class="f"><label>Patient Name</label><input type="text" id="pName" placeholder="Full Name" style="padding:8px;"></div>
+</div>
+<div class="fg3">
+  <div class="f"><label>Age</label><input type="number" id="pAge" placeholder="Years" style="padding:8px;"></div>
+  <div class="f"><label>Gender</label>
+    <select id="pGen" style="padding:8px;">
+      <option value="" disabled selected>Select...</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+      <option value="Other">Other</option>
+    </select>
+  </div>
+  <div class="f"><label>Contact / Phone</label><input type="text" id="pCont" placeholder="Phone Number" style="padding:8px;"></div>
 </div>
 <div class="f" style="margin-top:10px; margin-bottom: 20px;">
-  <label>Patient Name</label><input type="text" id="pName" placeholder="Full Name" style="padding:8px;">
+  <label>General Observations / Notes</label>
+  <textarea id="pObs" rows="3" placeholder="Enter clinical notes, wound status, or general observations here..." style="padding:8px; border:1px solid var(--border); border-radius:6px; font-family:inherit; font-size:12px; resize:vertical;"></textarea>
 </div>
 <div class="sec-h">Cloud Database Sync</div>
-<p class="hint">Data is securely saved and retrieved from the central Firebase cloud registry.</p>
+<p class="hint">Patient ID acts as the unique key. Use "Compare History" to map this patient's progress over time on the Radar Chart.</p>
 <div class="nav-row" style="border:none; padding-top:0; margin-top:0; justify-content: flex-start;">
   <button class="nbtn p" style="background:#16a34a; border-color:#16a34a;" onclick="saveData(this)">Save to Cloud</button>
-  <button class="nbtn" onclick="loadData(this)">Retrieve Data</button>
-  <button class="nbtn" style="border-color:#14a3a8; color:#14a3a8;" onclick="exportData(this)">Export Cloud Data (CSV)</button>
+  <button class="nbtn" onclick="loadData(this)">Retrieve Date</button>
+  <button class="nbtn" style="border-color:#b45309; color:#b45309;" onclick="compareHistory(this)">Compare History</button>
+  <button class="nbtn" style="border-color:#14a3a8; color:#14a3a8;" onclick="exportData(this)">Export CSV</button>
 </div>`,
 `<div class="sec-h">Cognition</div><div class="tog"><button class="tb on" id="gcsBtn" onclick="setCogMode('gcs')">GCS</button><button class="tb" id="mmseBtn" onclick="setCogMode('mmse')">MMSE</button></div><div id="gcsDiv"><div class="fg3"><div class="f"><label>Eye (E) 1–4</label><select id="gcsE" onchange="calc()">${selOpts([[4,'4'],[3,'3'],[2,'2'],[1,'1']],4)}</select></div><div class="f"><label>Verbal (V) 1–5</label><select id="gcsV" onchange="calc()">${selOpts([[5,'5'],[4,'4'],[3,'3'],[2,'2'],[1,'1']],4)}</select></div><div class="f"><label>Motor (M) 1–6</label><select id="gcsM" onchange="calc()">${selOpts([[6,'6'],[5,'5'],[4,'4'],[3,'3'],[2,'2'],[1,'1']],5)}</select></div></div></div><div id="mmseDiv" style="display:none"><div class="fg2"><div class="f"><label>A. Time (0–5)</label><select id="mmseA" onchange="calc()">${selOpts([[5,5],[4,4],[3,3],[2,2],[1,1],[0,0]],5)}</select></div><div class="f"><label>B. Place (0–5)</label><select id="mmseB" onchange="calc()">${selOpts([[5,5],[4,4],[3,3],[2,2],[1,1],[0,0]],5)}</select></div></div><div class="fg2"><div class="f"><label>C. Reg. (0–3)</label><select id="mmseC" onchange="calc()">${selOpts([[3,3],[2,2],[1,1],[0,0]],3)}</select></div><div class="f"><label>D. Attn (0–5)</label><select id="mmseD" onchange="calc()">${selOpts([[5,5],[4,4],[3,3],[2,2],[1,1],[0,0]],4)}</select></div></div><div class="fg2"><div class="f"><label>E. Recall (0–3)</label><select id="mmseE" onchange="calc()">${selOpts([[3,3],[2,2],[1,1],[0,0]],2)}</select></div><div class="f"><label>F. Lang. (0–8)</label><select id="mmseF" onchange="calc()">${selOpts([[8,8],[7,7],[6,6],[5,5],[4,4],[3,3],[2,2],[1,1],[0,0]],7)}</select></div></div><div class="fg2"><div class="f"><label>G. Visuo (0–1)</label><select id="mmseG" onchange="calc()">${selOpts([[1,'1'],[0,'0']],1)}</select></div></div></div><div class="sub">Cognition Overlay</div><div class="fg2"><div class="f"><label>Commands (0–2)</label><select id="cmdFol" onchange="calc()">${selOpts([[2,'2'],[1,'1'],[0,'0']],1)}</select></div><div class="f"><label>Attention (0–2)</label><select id="digitSpan" onchange="calc()">${selOpts([[2,'2'],[1,'1'],[0,'0']],1)}</select></div></div>`,
 `<div class="sec-h">Tone (MAS)</div><div class="sub">Upper Limb</div><div class="fg2"><div class="f"><label>Shoulder add</label><select id="masShAdd" onchange="calc()">${masOpts()}</select></div><div class="f"><label>Elbow flex</label><select id="masElFx" onchange="calc()">${masOpts()}</select></div></div><div class="fg2"><div class="f"><label>Forearm pro</label><select id="masFAPr" onchange="calc()">${masOpts()}</select></div><div class="f"><label>Wrist flex</label><select id="masWrFx" onchange="calc()">${masOpts()}</select></div></div><div class="fg2"><div class="f"><label>Finger flex</label><select id="masFinFx" onchange="calc()">${masOpts()}</select></div></div><div class="sub">Lower Limb</div><div class="fg2"><div class="f"><label>Hip add</label><select id="masHipAd" onchange="calc()">${masOpts()}</select></div><div class="f"><label>Knee pattern</label><select id="masKnee" onchange="calc()">${masOpts()}</select></div></div><div class="fg2"><div class="f"><label>Ankle PF</label><select id="masAnkPF" onchange="calc()">${masOpts()}</select></div><div class="f"><label>Toe flex</label><select id="masToeFx" onchange="calc()">${masOpts()}</select></div></div>`,
@@ -290,13 +299,51 @@ function renderResults(d) {
   document.getElementById('grsV').textContent = grs + '%'; document.getElementById('grsBadge').className = 'bb ' + grsCat[0]; document.getElementById('grsBadge').textContent = grsCat[1];
   document.getElementById('rpiV').textContent = rpi + '%'; document.getElementById('rpiBadge').className = 'bb ' + rpiCat[0]; document.getElementById('rpiBadge').textContent = rpiCat[1];
   document.getElementById('domainList').innerHTML = [ {lbl:'Cognition', v: Math.round(d.C_final)}, {lbl:'Strength', v: Math.round(d.S)}, {lbl:'Tone ctrl.', v: Math.round(100-d.TS)}, {lbl:'Trunk', v: Math.round(d.TR_pct)}, {lbl:'Motor Tasks', v: Math.round(d.T_pct)}, {lbl:'Motor Final', v: Math.round(d.M_final)}, {lbl:'Mot. Efficiency', v: Math.round(d.ME)}, {lbl:'Sensory', v: Math.round(d.SP_pct)}, {lbl:'Mobility', v: Math.round(d.FAC_pct)}, {lbl:'Endurance', v: Math.round(d.CF_pct)}, {lbl:'FIM Func', v: Math.round(d.F)} ].map(dm => `<div class="domain-row"><div class="dr-lbl">${dm.lbl}</div><div class="dr-bar-wrap"><div class="dr-bar" style="width:${dm.v}%;background:${dm.v >= 70 ? '#16a34a' : dm.v >= 40 ? '#b45309' : '#dc2626'}"></div></div><div class="dr-val">${dm.v}%</div></div>`).join('');
-  updateRadar(d); renderTriage(d); renderFlags(d);
+  
+  // Create an array of values in standard order to feed into the chart
+  const chartVals = [Math.round(d.C_final), Math.round(d.S), Math.round(100-d.TS), Math.round(d.SP_pct), Math.round(d.FAC_pct), Math.round(d.CF_pct), Math.round(d.F), Math.round(d.T_pct)];
+  updateRadar(chartVals); renderTriage(d); renderFlags(d);
 }
 
-function updateRadar(d) {
-  const values = [Math.round(d.C_final), Math.round(d.S), Math.round(100-d.TS), Math.round(d.SP_pct), Math.round(d.FAC_pct), Math.round(d.CF_pct), Math.round(d.F), Math.round(d.T_pct)];
-  if (radarChart) { radarChart.data.datasets[0].data = values; radarChart.update(); return; }
-  radarChart = new Chart(document.getElementById('radar').getContext('2d'), { type: 'radar', data: { labels: ['Cognition','Strength','Tone ctrl.','Sensory','Mobility','Endurance','FIM Func.','Mot. Tasks'], datasets: [{ data: values, fill: true, backgroundColor: 'rgba(13,115,119,0.15)', borderColor: '#0d7377', borderWidth: 2, pointBackgroundColor: '#0d7377', pointRadius: 3 }] }, options: { responsive: false, scales: { r: { min: 0, max: 100, ticks: { stepSize: 25, font: {size: 9}, color: '#94a3b8' }, pointLabels: { font: {size: 10}, color: '#475569' } } }, plugins: { legend: { display: false } } } });
+function updateRadar(values) {
+  if (radarChart) { 
+    // Reset to a single dataset mode (Current Assessment)
+    radarChart.data.datasets = [{ 
+      label: 'Current Assessment', 
+      data: values, 
+      fill: true, 
+      backgroundColor: 'rgba(13,115,119,0.15)', 
+      borderColor: '#0d7377', 
+      borderWidth: 2, 
+      pointBackgroundColor: '#0d7377', 
+      pointRadius: 3 
+    }];
+    radarChart.options.plugins.legend.display = false; // Hide legend for single assessment
+    radarChart.update(); 
+    return; 
+  }
+  
+  radarChart = new Chart(document.getElementById('radar').getContext('2d'), { 
+    type: 'radar', 
+    data: { 
+      labels: ['Cognition','Strength','Tone ctrl.','Sensory','Mobility','Endurance','FIM Func.','Mot. Tasks'], 
+      datasets: [{ 
+        label: 'Current Assessment',
+        data: values, 
+        fill: true, 
+        backgroundColor: 'rgba(13,115,119,0.15)', 
+        borderColor: '#0d7377', 
+        borderWidth: 2, 
+        pointBackgroundColor: '#0d7377', 
+        pointRadius: 3 
+      }] 
+    }, 
+    options: { 
+      responsive: false, 
+      scales: { r: { min: 0, max: 100, ticks: { stepSize: 25, font: {size: 9}, color: '#94a3b8' }, pointLabels: { font: {size: 10}, color: '#475569' } } }, 
+      plugins: { legend: { display: false, labels: {boxWidth: 10, font: {size: 10}} } } 
+    } 
+  });
 }
 
 function renderTriage(d) {
@@ -335,24 +382,28 @@ async function saveData(btn) {
   btn.textContent = "Saving..."; btn.disabled = true;
 
   const allInputs = {};
-  // Avoid saving login textboxes
-  document.querySelectorAll('select, input').forEach(el => { 
+  // Now includes Textareas
+  document.querySelectorAll('select, input, textarea').forEach(el => { 
     if (el.id && el.id !== 'txtEmail' && el.id !== 'txtPass') allInputs[el.id] = el.value; 
   });
 
   const payload = {
     patientId: patientId, 
-    patientName: document.getElementById('pName').value, 
     date: date,
+    patientName: document.getElementById('pName').value, 
+    age: document.getElementById('pAge').value,
+    gender: document.getElementById('pGen').value,
+    contact: document.getElementById('pCont').value,
+    observations: document.getElementById('pObs').value,
     grs: document.getElementById('grsV').textContent, 
     rpi: document.getElementById('rpiV').textContent,
     triage: document.getElementById('triageV').textContent, 
+    radarChartData: radarChart.data.datasets[0].data, // Invisibly save the chart coordinates
     inputs: allInputs,
     savedBy: auth.currentUser.email,
     timestamp: firebase.firestore.FieldValue.serverTimestamp()
   };
 
-  // e.g. "PT-1001_2026-06-04"
   const documentKey = `${patientId}_${date}`;
 
   try {
@@ -400,13 +451,68 @@ async function loadData(btn) {
   }
 }
 
+async function compareHistory(btn) {
+  const patientId = document.getElementById('pId').value.trim();
+  if (!patientId) return alert("Enter a Patient ID first to map their history.");
+  
+  const oldText = btn.textContent;
+  btn.textContent = "Mapping..."; btn.disabled = true;
+
+  try {
+    // Grab all records for this specific patient
+    const snapshot = await db.collection("assessments").where("patientId", "==", patientId).get();
+    
+    if (snapshot.empty) {
+      alert("No historical records found for this Patient ID.");
+      btn.textContent = oldText; btn.disabled = false;
+      return;
+    }
+
+    let records = [];
+    snapshot.forEach(doc => records.push(doc.data()));
+    
+    // Sort chronologically by date
+    records.sort((a,b) => new Date(a.date) - new Date(b.date));
+
+    // Define a palette of distinct colors for the overlay
+    const colorPalette = ['#0d7377', '#b45309', '#16a34a', '#8b5cf6', '#dc2626'];
+    
+    const historicalDatasets = records.map((rec, i) => {
+      const c = colorPalette[i % colorPalette.length];
+      return {
+        label: rec.date || 'Unknown Date',
+        data: rec.radarChartData || [], // Pull the saved coordinates
+        fill: true,
+        backgroundColor: c + '33', // Adding '33' makes the color semi-transparent
+        borderColor: c,
+        borderWidth: 2,
+        pointBackgroundColor: c,
+        pointRadius: 3
+      };
+    });
+
+    if (radarChart) {
+      radarChart.data.datasets = historicalDatasets;
+      radarChart.options.plugins.legend.display = true; // Turn the legend on so we can see the dates
+      radarChart.update();
+    }
+    
+    alert(`Successfully overlaid ${records.length} assessments on the Radar Chart!`);
+
+  } catch (e) {
+    alert("Error loading history: " + e.message);
+    console.error(e);
+  } finally {
+    btn.textContent = oldText; btn.disabled = false;
+  }
+}
+
 async function exportData(btn) {
   const oldText = btn.textContent;
   btn.textContent = "Exporting..."; btn.disabled = true;
 
   try {
     const snapshot = await db.collection("assessments").get();
-    
     if (snapshot.empty) {
       alert("No patient data found in the cloud database.");
       btn.textContent = oldText; btn.disabled = false;
@@ -415,7 +521,6 @@ async function exportData(btn) {
 
     let records = [];
     let inputKeys = new Set();
-
     snapshot.forEach(doc => {
       let data = doc.data();
       records.push(data);
@@ -425,31 +530,24 @@ async function exportData(btn) {
     });
 
     let inputsArray = Array.from(inputKeys).sort();
-    let header = ["Patient ID", "Date", "Patient Name", "Saved By Therapist", "GRS", "RPI", "Triage Category", ...inputsArray];
+    let header = ["Patient ID", "Date", "Patient Name", "Age", "Gender", "Contact", "Saved By", "GRS", "RPI", "Triage Category", "Observations", ...inputsArray];
     let csv = header.join(",") + "\n";
 
     records.forEach(data => {
       let safeName = data.patientName ? `"${data.patientName.replace(/"/g, '""')}"` : "";
       let safeTriage = data.triage ? `"${data.triage.replace(/"/g, '""')}"` : "";
+      let safeObs = data.observations ? `"${data.observations.replace(/"/g, '""').replace(/\n/g, " ")}"` : "";
 
       let row = [
-        data.patientId || "",
-        data.date || "",
-        safeName,
-        data.savedBy || "",
-        data.grs || "",
-        data.rpi || "",
-        safeTriage
+        data.patientId || "", data.date || "", safeName, data.age || "", data.gender || "", data.contact || "",
+        data.savedBy || "", data.grs || "", data.rpi || "", safeTriage, safeObs
       ];
 
       inputsArray.forEach(k => {
         let val = (data.inputs && data.inputs[k] !== undefined) ? data.inputs[k] : "";
-        if (typeof val === 'string' && val.includes(',')) {
-          val = `"${val.replace(/"/g, '""')}"`;
-        }
+        if (typeof val === 'string' && val.includes(',')) val = `"${val.replace(/"/g, '""')}"`;
         row.push(val);
       });
-
       csv += row.join(",") + "\n";
     });
 
@@ -465,7 +563,6 @@ async function exportData(btn) {
 
   } catch (e) {
     alert("Error exporting data: " + e.message);
-    console.error(e);
   } finally {
     btn.textContent = oldText; btn.disabled = false;
   }
